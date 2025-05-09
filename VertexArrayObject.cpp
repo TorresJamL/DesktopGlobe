@@ -6,10 +6,16 @@
 VertexArrayObject::VertexArrayObject() {
 	glGenVertexArrays(1, &ID);
 }
-void VertexArrayObject::LinkVertexBufferObject(VertexBufferObject VBO, GLuint layout) {
+void VertexArrayObject::LinkAttrib(
+		VertexBufferObject VBO, 
+		GLuint layout, 
+		GLuint numComponents, 
+		GLenum type, 
+		GLsizeiptr stride, 
+		void* offset) {
 	VBO.Bind();
 	// Configure the Vertex Attribute so that openGl knows how to read the VBO
-	glVertexAttribPointer(layout, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
 	// Enable the attribute so openGL kows how to use it
 	glEnableVertexAttribArray(layout);
 	VBO.Unbind();

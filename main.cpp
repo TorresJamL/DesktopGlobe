@@ -74,7 +74,8 @@ int main() {
 	ElementBufferObject EBO1(indices, sizeof(indices)); 
 
 	// Links VBO to VAO
-	VAO1.LinkVertexBufferObject(VBO1, 0);
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	// Unbind all objects to prevent modifying them
 	VAO1.Unbind();
 	VBO1.Unbind();
@@ -102,8 +103,20 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		//-- AI generated -- // Resizes the drawn shape to match the aspect ratio of the window
+		int width, height;
+		glfwGetFramebufferSize(wnd, &width, &height); 
+		float aspect = width / (float)height;
+		//-^ AI generated -^ //
+		
 		// Draw space
 		shaderProgram.Activate();
+
+		//-- AI generated -- //
+		GLuint aspectLoc = glGetUniformLocation(shaderProgram.ID, "aspect");
+		glUniform1f(aspectLoc, aspect);
+		//-^ AI generated -^ //
+
 		VAO1.Bind();
 		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
 		
