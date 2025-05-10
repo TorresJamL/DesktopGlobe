@@ -81,6 +81,8 @@ int main() {
 	VBO1.Unbind();
 	EBO1.Unbind();
 
+	// Used to scale shapes made by a float value or smth
+	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
 	// Gets Win32 window from the glfw window. A lot of windowing happening here.
 	HWND hwnd = glfwGetWin32Window(wnd);
@@ -108,10 +110,10 @@ int main() {
 		glfwGetFramebufferSize(wnd, &width, &height); 
 		float aspect = width / (float)height;
 		//-^ AI generated -^ //
-		
+			
 		// Draw space
 		shaderProgram.Activate();
-
+		glUniform1f(uniID, 0.5f);
 		//-- AI generated -- //
 		GLuint aspectLoc = glGetUniformLocation(shaderProgram.ID, "aspect");
 		glUniform1f(aspectLoc, aspect);
