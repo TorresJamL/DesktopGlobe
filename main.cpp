@@ -5,12 +5,53 @@
 #include <GLFW/glfw3native.h>
 #include <dwmapi.h>
 #include <iostream>
+#include "stb/stb_image.h"
+
 #include "shaderClass.h"
 #include "VertexBufferObject.h"
 #include "VertexArrayObject.h"
 #include "ElementBufferObject.h"
+#include "Texture.h"
 
-GLFWwindow* createGLFW_Window(
+// Define vertices for a equi-Triangle made of three triangles with an open space in the middle that happens to be triangular. !THIS EX, DOES NOT HAVE TEXTURE!
+//GLfloat vertices[] = {
+//	//  |<--------------Coordinates-------------->|    |<-----Colors----->|
+//		-0.5f, -0.5f * float(sqrt(3)) / 3,    0.0f,		0.8f, 0.3f,  0.02f,		// Lower left corner
+//		 0.5f, -0.5f * float(sqrt(3)) / 3,    0.0f,		0.8f, 0.3f,  0.02f,		// lower right corner
+//		 0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f,		1.0f, 0.6f,  0.32f,		// Upper corner
+//		-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,		0.9f, 0.45f, 0.17f,		// Inner left
+//		 0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,		0.9f, 0.45f, 0.17f,		// Inner right
+//		 0.0f, -0.5f * float(sqrt(3)) / 3,    0.0f,		0.8f, 0.3f,  0.02f		// Inner down	
+//};
+//GLuint indices[] = {
+//	0, 3, 5, // lower left tri
+//	3, 2, 4, // lower right tri
+//	5, 4, 1 // upper tri
+//};
+
+// Defines vertex coordinates for a square, and its colors too. 
+// Nothing really special about this one unfortunately but, hey, its fair to be square. :thumbsup:
+// This also generates the coordinate system for the texture and how it applies to the vertices. kinda. 
+// I explained it poorly.
+GLfloat vertices[] = {
+//  |<--Coordinates-->|    |<----Colors---->|  |<Texture Coords>|
+	-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, // lower left corner
+	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // upper left corner
+	 0.5f,	0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // upper right corner
+	 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f, // lower right corner
+};
+// Define the array of indices (Know as an element array). This tells OpenGL which vertices to connect and in what order to form primitives.
+// Without indices you repeat shared vertices for each triangle, making it good for efficiency!
+GLuint indices[] = {
+	0, 2, 1, // upper triangle
+	0, 3, 2, // lower tri-angles (im so funny.) -> (correction: I'm so funny!)
+};
+
+/*
+Makes a GLFWwindow*
+@returns GLFWwindow* : A transparent, maximized, resizable, undecorated window
+*/
+static GLFWwindow* createGLFW_Window(
 		int width, 
 		int height, 
 		const char *title, 
@@ -39,28 +80,13 @@ int main() {
 	glfwMakeContextCurrent(wnd);
 	glewExperimental = GL_TRUE;
 	if(glewInit() != GLEW_OK) {
+		// If glew is not ok, terminate everything. On sight. Otherwise, continue on.
 		std::cerr << "Failed to initialize GLEW" << std::endl;
 		glfwDestroyWindow(wnd);
 		glfwTerminate();
 		return -1;
 	}
 
-
-	// Define vertices for a equi-Triangle
-	GLfloat vertices[] = {
-	//  |<--------------Coordinates-------------->|    |<-----Colors----->|
-		-0.5f, -0.5f * float(sqrt(3)) / 3,    0.0f,		0.8f, 0.3f,  0.02f,		// Lower left corner
-		 0.5f, -0.5f * float(sqrt(3)) / 3,    0.0f,		0.8f, 0.3f,  0.02f,		// lower right corner
-		 0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f,		1.0f, 0.6f,  0.32f,		// Upper corner
-		-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,		0.9f, 0.45f, 0.17f,		// Inner left
-		 0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,		0.9f, 0.45f, 0.17f,		// Inner right
-		 0.0f, -0.5f * float(sqrt(3)) / 3,    0.0f,		0.8f, 0.3f,  0.02f		// Inner down	
-	};
-	GLuint indices[] = {
-		0, 3, 5, // lower left tri
-		3, 2, 4, // lower right tri
-		5, 4, 1 // upper tri
-	};
 	// Creates shader object
 	Shader shaderProgram("default.vert", "default.frag");
 
@@ -74,8 +100,9 @@ int main() {
 	ElementBufferObject EBO1(indices, sizeof(indices)); 
 
 	// Links VBO to VAO
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
+	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	// Unbind all objects to prevent modifying them
 	VAO1.Unbind();
 	VBO1.Unbind();
@@ -83,6 +110,9 @@ int main() {
 
 	// Used to scale shapes made by a float value or smth
 	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+
+	Texture myPFP("pfp.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
+	myPFP.texUnit(shaderProgram, "tex0", 0);
 
 	// Gets Win32 window from the glfw window. A lot of windowing happening here.
 	HWND hwnd = glfwGetWin32Window(wnd);
@@ -114,24 +144,27 @@ int main() {
 		// Draw space
 		shaderProgram.Activate();
 		glUniform1f(uniID, 0.5f);
+		myPFP.Bind();
+
 		//-- AI generated -- //
 		GLuint aspectLoc = glGetUniformLocation(shaderProgram.ID, "aspect");
 		glUniform1f(aspectLoc, aspect);
 		//-^ AI generated -^ //
 
 		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		
 		// End of draw space.
 		glfwSwapBuffers(wnd);
 		glfwPollEvents();
 	}
 
-	// Delete all the objects created. 
+	// Delete all the objects created. "Before creation, comes destruction" - Beerus... Except he's just wrong. Should've learned to code, nerd.
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
 	shaderProgram.Delete();
+	myPFP.Delete();
 	glfwDestroyWindow(wnd);
 	glfwTerminate();
 	return 0;
