@@ -7,7 +7,7 @@ VertexArrayObject::VertexArrayObject() {
 	glGenVertexArrays(1, &ID);
 }
 void VertexArrayObject::LinkAttrib(
-		VertexBufferObject VBO, 
+		VertexBufferObject& VBO, 
 		GLuint layout, 
 		GLuint numComponents, 
 		GLenum type, 

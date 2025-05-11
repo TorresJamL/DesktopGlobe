@@ -6,7 +6,7 @@
 #include <dwmapi.h>
 #include <iostream>
 #include "stb/stb_image.h"
-
+#include <glm/gtc/type_ptr.hpp>
 #include "shaderClass.h"
 #include "VertexBufferObject.h"
 #include "VertexArrayObject.h"
@@ -33,18 +33,29 @@
 // Nothing really special about this one unfortunately but, hey, its fair to be square. :thumbsup:
 // This also generates the coordinate system for the texture and how it applies to the vertices. kinda. 
 // I explained it poorly.
+//GLfloat vertices[] = {
+////  |<--Coordinates-->|    |<----Colors---->|  |<Texture Coords>|
+//	-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, // lower left corner
+//	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // upper left corner
+//	 0.5f,	0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // upper right corner
+//	 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f, // lower right corner
+//};
+//// Define the array of indices (Know as an element array). This tells OpenGL which vertices to connect and in what order to form primitives.
+//// Without indices you repeat shared vertices for each triangle, making it good for efficiency!
+//GLuint indices[] = {
+//	0, 2, 1, // upper triangle
+//	0, 3, 2, // lower tri-angles (im so funny.) -> (correction: I'm so funny!)
+//};
+
+/*
+TIME FOR 3D BABY, WHOOOO
+@1:00:00 in, drawing a pyramid. Sphere is SO close yall.
+*/
 GLfloat vertices[] = {
-//  |<--Coordinates-->|    |<----Colors---->|  |<Texture Coords>|
-	-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, // lower left corner
-	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // upper left corner
-	 0.5f,	0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // upper right corner
-	 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f, // lower right corner
-};
-// Define the array of indices (Know as an element array). This tells OpenGL which vertices to connect and in what order to form primitives.
-// Without indices you repeat shared vertices for each triangle, making it good for efficiency!
-GLuint indices[] = {
-	0, 2, 1, // upper triangle
-	0, 3, 2, // lower tri-angles (im so funny.) -> (correction: I'm so funny!)
+	-0.5f, -0.0f, 0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 
+	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f, 
+	 0.5f,	0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f, 
+	 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f, 
 };
 
 /*
@@ -143,6 +154,23 @@ int main() {
 			
 		// Draw space
 		shaderProgram.Activate();
+
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 proj = glm::mat4(1.0f);
+
+		view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
+		proj = glm::perspective(glm::radians(45.0f), (float) (width / height), 0.1f, 100.0f);
+
+		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+		int viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+			
+		int projLoc = glGetUniformLocation(shaderProgram.ID, "proj");
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+
 		glUniform1f(uniID, 0.5f);
 		myPFP.Bind();
 
@@ -159,7 +187,7 @@ int main() {
 		glfwPollEvents();
 	}
 
-	// Delete all the objects created. "Before creation, comes destruction" - Beerus... Except he's just wrong. Should've learned to code, nerd.
+	// Delete all the objects created. "Before creation, comes destruction" - Beerus... Should've learned to code.
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
