@@ -4,7 +4,10 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #include <dwmapi.h>
+
 #include <iostream>
+#include <vector>
+
 #include "stb/stb_image.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "shaderClass.h"
@@ -71,6 +74,8 @@ GLuint indices[] = {
 	2, 3, 4,
 	3, 0, 4
 };
+
+
 /*
 Makes a GLFWwindow*
 @returns GLFWwindow* : A transparent, maximized, resizable, undecorated window
