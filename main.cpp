@@ -16,6 +16,7 @@
 #include "ElementBufferObject.h"
 #include "Texture.h"
 #include "Camera.h"
+#include "Sphere.h"
 
 // Define vertices for a equi-Triangle made of three triangles with an open space in the middle that happens to be triangular. !THIS EX, DOES NOT HAVE TEXTURE!
 //GLfloat vertices[] = {
@@ -56,25 +57,26 @@ TIME FOR 3D BABY, WHOOOO
 @1:00:00 in, drawing a pyramid. Sphere is SO close yall.
 */
 // Vertices coordinates
-GLfloat vertices[] = {
-//	|<--Coordinates-->|    |<------Colors----->|   |<Texture Coords>|
-	-0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-	-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
-	 0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-	 0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
-	 0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	2.5f, 5.0f
-};
+//GLfloat vertices[] = {
+////	|<--Coordinates-->|    |<------Colors----->|   |<Texture Coords>|
+//	-0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+//	-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
+//	 0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+//	 0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
+//	 0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	2.5f, 5.0f
+//};
+//
+//// Indices for vertices order
+//GLuint indices[] = {
+//	0, 1, 2,
+//	0, 2, 3,
+//	0, 1, 4,
+//	1, 2, 4,
+//	2, 3, 4,
+//	3, 0, 4
+//};
 
-// Indices for vertices order
-GLuint indices[] = {
-	0, 1, 2,
-	0, 2, 3,
-	0, 1, 4,
-	1, 2, 4,
-	2, 3, 4,
-	3, 0, 4
-};
-
+Sphere sphere(0.5f, 36, 18);
 
 /*
 Makes a GLFWwindow*
@@ -125,9 +127,9 @@ int main() {
 	VAO1.Bind();
 
 	// Creates Vertex Buffer Object and links it to vertices
-	VertexBufferObject VBO1(vertices, sizeof(vertices));
+	VertexBufferObject VBO1(sphere.getVertices().data(), sphere.getVertices().size() * sizeof(GLfloat));
 	// Creates Element Buffer Object and links it to indices
-	ElementBufferObject EBO1(indices, sizeof(indices)); 
+	ElementBufferObject EBO1(sphere.getIndices().data(), sphere.getIndices().size() * sizeof(GLuint));
 
 	// Links VBO to VAO
 	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
@@ -139,7 +141,7 @@ int main() {
 	EBO1.Unbind();
 
 
-	Texture image("barack.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
+	Texture image("earth.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
 	image.texUnit(shaderProgram, "tex0", 0);
 
 	// Gets Win32 window from the glfw window. A lot of windowing happening here.
@@ -183,7 +185,7 @@ int main() {
 		image.Bind();
 
 		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sphere.getIndices().size()), GL_UNSIGNED_INT, 0);
 		
 		// End of draw space.
 		if (glfwGetKey(wnd, GLFW_KEY_ESCAPE) == GLFW_PRESS) {

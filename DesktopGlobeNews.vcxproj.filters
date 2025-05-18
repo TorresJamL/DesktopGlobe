@@ -16,6 +16,9 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{a68f4915-3d7b-4373-902f-4c2daf0d8e1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{2700e1ef-a9a7-4933-b745-dcaa25e2f72c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -79,10 +82,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\Downloads\pfp.jpg">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Textures</Filter>
     </Image>
-    <Image Include="barack.jpg">
-      <Filter>Resource Files</Filter>
+    <Image Include="earth.jpg">
+      <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>
 </Project>
