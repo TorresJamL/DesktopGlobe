@@ -133,6 +133,7 @@
     <ClCompile Include="ElementBufferObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shaderClass.cpp" />
+    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertexArrayObject.cpp" />
@@ -146,12 +147,14 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ElementBufferObject.h" />
     <ClInclude Include="shaderClass.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexArrayObject.h" />
     <ClInclude Include="VertexBufferObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\Downloads\pfp.jpg" />
+    <Image Include="barack.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

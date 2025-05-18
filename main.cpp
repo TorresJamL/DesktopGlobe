@@ -139,7 +139,7 @@ int main() {
 	EBO1.Unbind();
 
 
-	Texture image("pfp.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
+	Texture image("barack.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
 	image.texUnit(shaderProgram, "tex0", 0);
 
 	// Gets Win32 window from the glfw window. A lot of windowing happening here.
