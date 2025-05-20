@@ -15,15 +15,17 @@ public:
 	std::vector<GLfloat> getVertices();
 	std::vector<GLuint> getIndices();
 	void Draw(
-		Shader shader, 
-		float orientationAngle, 
-		float rotationAngle, 
-		glm::vec3 orientationUnitVect, 
-		glm::vec3 rotationUnitVect
+		Shader shader,
+		float orientationAngle,
+		float rotationAngle,
+		glm::vec3 orientationUnitVect,
+		glm::vec3 rotationUnitVect,
+		glm::mat4 translation
 	);
 	void setSectorCount(int sectorCount);
 	void setStackCount(int stackCount);
 	void setRadius(float radius);
+
 private:
 	// Create the model matrix
 	glm::mat4 model = glm::mat4(1.0f);

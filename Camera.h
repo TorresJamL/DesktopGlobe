@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include "shaderClass.h"
+#include "Sphere.h"
 #include "GLFW/glfw3.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,6 +21,7 @@ public:
 	int height;
 
 	bool firstClick = true;
+	bool freeCamera = false;
 
 	float speed = 0.1f;
 	float sensitivity = 100.0f;
@@ -27,7 +29,7 @@ public:
 	Camera(int width, int height, glm::vec3 position);
 
 	void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
-	void Inputs(GLFWwindow* window, float deltatime);
+	void Inputs(GLFWwindow* window, float deltatime, Sphere sphere);
 };
 
 #endif // !CAMERA_CLASS_H

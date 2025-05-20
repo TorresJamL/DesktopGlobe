@@ -15,6 +15,7 @@ Sphere::Sphere(float radius, int sectorCount, int stackCount) {
 	vertices = generateSphereVertices(radius, sectorCount, stackCount);
 	indices = generateSphereIndices(sectorCount, stackCount);
 }
+
 Sphere::~Sphere() {
 
 }
@@ -22,6 +23,7 @@ Sphere::~Sphere() {
 std::vector<GLfloat> Sphere::getVertices() {
 	return vertices;
 }
+
 std::vector<GLuint> Sphere::getIndices() {
 	return indices;
 }
@@ -29,9 +31,11 @@ std::vector<GLuint> Sphere::getIndices() {
 void Sphere::setSectorCount(int sectorCount) {
 	this->sectorCount = sectorCount;
 }
+
 void Sphere::setStackCount(int stackCount) {
 	this->stackCount = stackCount;
 }
+
 void Sphere::setRadius(float radius) {
 	this->radius = radius;
 }
@@ -46,9 +50,11 @@ void Sphere::Draw(
 	float orientationAngle, 
 	float rotationAngle, 
 	glm::vec3 orientationUnitVect, 
-	glm::vec3 rotationUnitVect) 
+	glm::vec3 rotationUnitVect,
+	glm::mat4 translation) 
 {
-	model = glm::mat4(1.0f);
+	// Prevent if from rotating out of existence, translate it right of screen.
+	model = translation;
 
 	// Rotates the sphere 90 degrees down so the americas are facing the camera by default.
 	glm::mat4 orientation = glm::rotate(model, glm::radians(orientationAngle), orientationUnitVect);
@@ -56,7 +62,9 @@ void Sphere::Draw(
 	// Controls the sphere's rotation around a given axis aka rotationUnitVect. 
 	glm::mat4 rotation = glm::rotate(model, glm::radians(rotationAngle), rotationUnitVect);
 
+	// Apply the orientation and rotation to the sphere
 	model = orientation * rotation;
+
 	// Pass the model matrix to the shader
 	GLuint modelLoc = glGetUniformLocation(shader.ID, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -77,16 +85,17 @@ std::vector<GLfloat> Sphere::generateSphereVertices(float radius, unsigned int s
 			float x = xy * cosf(sectorAngle);
 			float y = xy * sinf(sectorAngle);
 
+			// main vertices
 			vertices.push_back(x);
 			vertices.push_back(y);
 			vertices.push_back(z);
 
-			// Add colors (example: white)
+			// Add colors
 			vertices.push_back(1.0f); // R
 			vertices.push_back(1.0f); // G
 			vertices.push_back(1.0f); // B
 
-			// Add texture coordinates (optional)
+			// Add texture coordinates
 			vertices.push_back(((float)j) / sectorCount); // u
 			vertices.push_back(((float)i) / stackCount);  // v
 		}

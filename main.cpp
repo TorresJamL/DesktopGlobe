@@ -166,30 +166,31 @@ int main() {
 
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 3.0f));
 
-	float deltaTime = 0.0f;
-	float lastFrame = 0.0f;
+	double deltaTime = 0.0;
+	double lastFrame = 0.0;
 	int rotater = 0;
 
-	// -90 deg change in x:
+	camera.freeCamera = false;
 	while (!glfwWindowShouldClose(wnd)) {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		float currentFrame = glfwGetTime();
+		double currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-
+		
 		// Draw space
 		shaderProgram.Activate();
-
-		// Does not work as intended. Every rotations seems to reset the last.
+	
+		// Rotates the sphere around the z-axis
 		sphere.Draw(
 			shaderProgram, 
-			-90.0f, rotater, 
+			-90.0f, rotater * 1.0f,
 			glm::vec3(1.0f, 0.0f, 0.0f), 
-			glm::vec3(0.0f, 0.0f, 1.0f)
+			glm::vec3(0.0f, 0.0f, 1.0f),
+			glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f))
 		);
 
-		camera.Inputs(wnd, deltaTime);
+		camera.Inputs(wnd, deltaTime, sphere);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 		
 		// Binds texture so that is appears in rendering
