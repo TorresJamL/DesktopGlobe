@@ -76,7 +76,7 @@ TIME FOR 3D BABY, WHOOOO
 //	3, 0, 4
 //};
 
-Sphere sphere(0.5f, 36, 18);
+Sphere sphere(0.5f, 144, 72);
 
 /*
 Makes a GLFWwindow*
@@ -141,7 +141,7 @@ int main() {
 	EBO1.Unbind();
 
 
-	Texture image("earth.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
+	Texture image("newEarth.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
 	image.texUnit(shaderProgram, "tex0", 0);
 
 	// Gets Win32 window from the glfw window. A lot of windowing happening here.
@@ -168,6 +168,9 @@ int main() {
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
+	int rotater = 0;
+
+	// -90 deg change in x:
 	while (!glfwWindowShouldClose(wnd)) {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -177,6 +180,14 @@ int main() {
 
 		// Draw space
 		shaderProgram.Activate();
+
+		// Does not work as intended. Every rotations seems to reset the last.
+		sphere.Draw(
+			shaderProgram, 
+			-90.0f, rotater, 
+			glm::vec3(1.0f, 0.0f, 0.0f), 
+			glm::vec3(0.0f, 0.0f, 1.0f)
+		);
 
 		camera.Inputs(wnd, deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
@@ -193,6 +204,7 @@ int main() {
 		}
 		glfwSwapBuffers(wnd);
 		glfwPollEvents();
+		rotater++;
 	}
 
 	// Delete all the objects created. "Before creation, comes destruction" - Beerus... Should've learned to code.

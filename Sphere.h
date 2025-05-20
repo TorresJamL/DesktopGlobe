@@ -1,21 +1,33 @@
 #ifndef SPHERE_CLASS_H
 #define SPHERE_CLASS_H
 
+#include <GL/glew.h>
+#include <glm/gtc/type_ptr.hpp>
 #include "GLFW/glfw3.h"
 
 #include <vector>
+#include "shaderClass.h"
 
 class Sphere {
 public:
 	Sphere(float radius, int sectorCount, int stackCount);
-
+	~Sphere();
 	std::vector<GLfloat> getVertices();
 	std::vector<GLuint> getIndices();
-
+	void Draw(
+		Shader shader, 
+		float orientationAngle, 
+		float rotationAngle, 
+		glm::vec3 orientationUnitVect, 
+		glm::vec3 rotationUnitVect
+	);
 	void setSectorCount(int sectorCount);
 	void setStackCount(int stackCount);
 	void setRadius(float radius);
 private:
+	// Create the model matrix
+	glm::mat4 model = glm::mat4(1.0f);
+
 	int sectorCount;
 	int stackCount;
 	float radius;

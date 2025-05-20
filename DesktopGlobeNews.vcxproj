@@ -156,6 +156,8 @@
   <ItemGroup>
     <Image Include="..\..\..\Downloads\pfp.jpg" />
     <Image Include="earth.jpg" />
+    <Image Include="newEarth.jpg" />
+    <Image Include="obamman.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
