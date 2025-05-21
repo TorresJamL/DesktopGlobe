@@ -100,12 +100,53 @@ static GLFWwindow* createGLFW_Window(
 	GLFWwindow* wnd = glfwCreateWindow(500, 500, "Transparent", NULL, NULL);
 	return wnd;
 }
+
+#ifdef _WIN32
+// BE SKEPTICAL, MAY OR MAY NOT WORK. 
+// Currently creates nigh-impossible to remove wallpaper windows which are annoying.
+bool attachToDesktopWorkerW(HWND hwnd) {
+	HWND progman = FindWindow(L"Progman", nullptr);
+	if (!progman) return false;
+
+	// Force creation of WorkerW
+	SendMessageTimeout(progman, 0x052C, 0, 0, SMTO_NORMAL, 1000, nullptr);
+
+	HWND workerw = nullptr;
+
+	EnumWindows([](HWND top, LPARAM lParam) -> BOOL {
+		HWND shellView = FindWindowEx(top, nullptr, L"SHELLDLL_DefView", nullptr);
+		if (shellView) {
+			// Found the desktop icons container — next sibling WorkerW is what we want
+			HWND* out = reinterpret_cast<HWND*>(lParam);
+			*out = FindWindowEx(nullptr, top, L"WorkerW", nullptr);
+			return FALSE;
+		}
+		return TRUE;
+		}, reinterpret_cast<LPARAM>(&workerw));
+
+	if (workerw) {
+		SetParent(hwnd, workerw);
+		OutputDebugString(L"[attachToDesktopWorkerW] Success.\n");
+		return true;
+	}
+	else {
+		OutputDebugString(L"[attachToDesktopWorkerW] Failed.\n");
+		return false;
+	}
+}
+#endif
+
+
 // FreeCodeCamp vid: https://youtu.be/45MIykWJ-C4
 int main() {
 	GLFWwindow* wnd = createGLFW_Window(500, 500, "Transparent", NULL, NULL);
-
 	// Error check for if the window doesn't load, aka it equals null.
 	if (!wnd) { glfwTerminate(); return -1; }
+
+	// Gets Win32 window from the glfw window. A lot of windowing happening here.
+	HWND hwnd = glfwGetWin32Window(wnd);
+	// Attach the window to the desktop so it is behind the apps but infront of desktop.
+	attachToDesktopWorkerW(hwnd);
 
 	// I... honestly don't know. Puts the window into context. Whatever that means.
 	glfwMakeContextCurrent(wnd);
@@ -130,7 +171,7 @@ int main() {
 	VertexBufferObject VBO1(sphere.getVertices().data(), sphere.getVertices().size() * sizeof(GLfloat));
 	// Creates Element Buffer Object and links it to indices
 	ElementBufferObject EBO1(sphere.getIndices().data(), sphere.getIndices().size() * sizeof(GLuint));
-
+	
 	// Links VBO to VAO
 	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
 	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -144,9 +185,7 @@ int main() {
 	Texture image("newEarth.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
 	image.texUnit(shaderProgram, "tex0", 0);
 
-	// Gets Win32 window from the glfw window. A lot of windowing happening here.
-	HWND hwnd = glfwGetWin32Window(wnd);
-
+	
 	// Extends the window frame into the client area.
 	// Gets rid of the white bar background behind the window's name, aka the frame.
 	MARGINS margins = { -1 };
