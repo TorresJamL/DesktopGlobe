@@ -146,7 +146,8 @@ int main() {
 	// Gets Win32 window from the glfw window. A lot of windowing happening here.
 	HWND hwnd = glfwGetWin32Window(wnd);
 	// Attach the window to the desktop so it is behind the apps but infront of desktop.
-	attachToDesktopWorkerW(hwnd);
+	//  Currently extremely buggy and does not work.
+	//attachToDesktopWorkerW(hwnd);
 
 	// I... honestly don't know. Puts the window into context. Whatever that means.
 	glfwMakeContextCurrent(wnd);
@@ -160,7 +161,7 @@ int main() {
 	}
 	int width, height;
 	glfwGetFramebufferSize(wnd, &width, &height);
-	// Creates shader object
+	// Creates shader obj~ect
 	Shader shaderProgram("default.vert", "default.frag");
 
 	// Generates Vertex Array Object and binds it
