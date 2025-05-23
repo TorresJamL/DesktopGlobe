@@ -76,8 +76,6 @@ TIME FOR 3D BABY, WHOOOO
 //	3, 0, 4
 //};
 
-Sphere sphere(0.5f, 144, 72);
-
 /*
 Makes a GLFWwindow*
 @returns GLFWwindow* : A transparent, maximized, resizable, undecorated window
@@ -92,7 +90,7 @@ static GLFWwindow* createGLFW_Window(
 	// Window hints to tell the window what it should be. 
 	// This is because all good windows should follow social norms.
 	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-	glfwWindowHint(GLFW_DECORATED, GLFW_TRUE); // Set GLFW_TRUE to GLFW_FALSE for the window to be completely transparent.
+	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE); // Set GLFW_TRUE to GLFW_FALSE for the window to be completely transparent.
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // TRUE to resize, false otherwise. 
 	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE); // C'mon, i dont need to say it.
 
@@ -161,6 +159,10 @@ int main() {
 	}
 	int width, height;
 	glfwGetFramebufferSize(wnd, &width, &height);
+
+	// Create the sphere
+	Sphere sphere(0.5f, 144, 72, width, height, 45.0f, 3.0f);
+
 	// Creates shader obj~ect
 	Shader shaderProgram("default.vert", "default.frag");
 
@@ -204,8 +206,8 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
+	// Create the camera
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 3.0f));
-
 	double deltaTime = 0.0;
 	double lastFrame = 0.0;
 	int rotater = 0;
@@ -221,17 +223,17 @@ int main() {
 		// Draw space
 		shaderProgram.Activate();
 	
+
+		camera.Inputs(wnd, (float)deltaTime, sphere);
+		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+		
 		// Rotates the sphere around the z-axis
 		sphere.Draw(
 			shaderProgram, 
 			-90.0f, rotater * 1.0f,
 			glm::vec3(1.0f, 0.0f, 0.0f), 
-			glm::vec3(0.0f, 0.0f, 1.0f),
-			glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f))
+			glm::vec3(0.0f, 0.0f, 1.0f)
 		);
-
-		camera.Inputs(wnd, deltaTime, sphere);
-		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 		
 		// Binds texture so that is appears in rendering
 		image.Bind();

@@ -1,4 +1,5 @@
 #include "Sphere.h"
+#include <Windows.h>
 
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -6,12 +7,22 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #include <vector>
+
 #include "shaderClass.h"
 
-Sphere::Sphere(float radius, int sectorCount, int stackCount) {
+Sphere::Sphere(
+	float radius, 
+	int sectorCount, 
+	int stackCount,
+	int screenWidth,
+	int screenHeight,
+	float fovDeg,
+	float camInit_Z)
+{
 	this->radius = radius;
 	this->sectorCount = sectorCount;
 	this->stackCount = stackCount;
+	this->translation = getCornerTranslation(screenWidth, screenHeight, camInit_Z, fovDeg);
 	vertices = generateSphereVertices(radius, sectorCount, stackCount);
 	indices = generateSphereIndices(sectorCount, stackCount);
 }
@@ -50,8 +61,7 @@ void Sphere::Draw(
 	float orientationAngle, 
 	float rotationAngle, 
 	glm::vec3 orientationUnitVect, 
-	glm::vec3 rotationUnitVect,
-	glm::mat4 translation) 
+	glm::vec3 rotationUnitVect) 
 {
 	// Prevent if from rotating out of existence, translate it right of screen.
 	model = translation;
@@ -71,6 +81,16 @@ void Sphere::Draw(
 
 }
 
+glm::mat4 Sphere::getCornerTranslation(int width, int height, float camInitalZ, float fov) {
+	float aspect = (float)width / (float)height;
+
+	float halfHeight = tan(glm::radians(fov / 2.0f)) * abs(camInitalZ);
+	float halfWidth = halfHeight * aspect;
+
+	float xOffset = halfWidth / 2.0f;
+
+	return glm::translate(glm::mat4(1.0f), glm::vec3(xOffset, 0.0f, camInitalZ));
+}
 std::vector<GLfloat> Sphere::generateSphereVertices(float radius, unsigned int sectorCount, unsigned int stackCount) {
 	std::vector<GLfloat> vertices;
 
@@ -102,6 +122,7 @@ std::vector<GLfloat> Sphere::generateSphereVertices(float radius, unsigned int s
 	}
 	return vertices;
 }
+
 std::vector<GLuint> Sphere::generateSphereIndices(unsigned int sectorCount, unsigned int stackCount) {
 	std::vector<GLuint> indices;
 
