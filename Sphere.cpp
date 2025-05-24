@@ -17,12 +17,13 @@ Sphere::Sphere(
 	int screenWidth,
 	int screenHeight,
 	float fovDeg,
-	float camInit_Z)
+	float camInit_Z,
+	float distanceFromCamera)
 {
 	this->radius = radius;
 	this->sectorCount = sectorCount;
 	this->stackCount = stackCount;
-	this->translation = getCornerTranslation(screenWidth, screenHeight, camInit_Z, fovDeg);
+	this->translation = getCornerTranslation(screenWidth, screenHeight, camInit_Z, fovDeg, distanceFromCamera, true);
 	vertices = generateSphereVertices(radius, sectorCount, stackCount);
 	indices = generateSphereIndices(sectorCount, stackCount);
 }
@@ -81,16 +82,28 @@ void Sphere::Draw(
 
 }
 
-glm::mat4 Sphere::getCornerTranslation(int width, int height, float camInitalZ, float fov) {
+glm::mat4 Sphere::getCornerTranslation(
+	int width, int height,
+	float camZ,
+	float fov,
+	float distanceFromCamera,
+	bool bottomRight) 
+{
 	float aspect = (float)width / (float)height;
 
-	float halfHeight = tan(glm::radians(fov / 2.0f)) * abs(camInitalZ);
+	float halfHeight = tan(glm::radians(fov / 2.0f)) * distanceFromCamera;
 	float halfWidth = halfHeight * aspect;
 
-	float xOffset = halfWidth / 2.0f;
+	float xOffset = (halfWidth / 2.0f) - radius;
+	float yOffset = (halfHeight / 2.0f) - radius;
 
-	return glm::translate(glm::mat4(1.0f), glm::vec3(xOffset, 0.0f, camInitalZ));
+	float x = bottomRight ? +xOffset : -xOffset;
+	float y = bottomRight ? -yOffset : +yOffset;
+	float z = camZ - distanceFromCamera;
+
+	return glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
 }
+
 std::vector<GLfloat> Sphere::generateSphereVertices(float radius, unsigned int sectorCount, unsigned int stackCount) {
 	std::vector<GLfloat> vertices;
 

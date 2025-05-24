@@ -161,7 +161,7 @@ int main() {
 	glfwGetFramebufferSize(wnd, &width, &height);
 
 	// Create the sphere
-	Sphere sphere(0.5f, 144, 72, width, height, 45.0f, 3.0f);
+	Sphere sphere(0.5f, 144, 72, width, height, 45.0f, 3.0f, 3.0f);
 
 	// Creates shader obj~ect
 	Shader shaderProgram("default.vert", "default.frag");

@@ -17,7 +17,8 @@ public:
 		int screenWidth,
 		int screenHeight,
 		float fovDeg,
-		float camInit_Z);
+		float camInit_Z,
+		float distanceFromCamera);
 	~Sphere();
 	std::vector<GLfloat> getVertices();
 	std::vector<GLuint> getIndices();
@@ -46,7 +47,12 @@ private:
 
 	std::vector<GLfloat> static generateSphereVertices(float radius, unsigned int sectorCount, unsigned int stackCount);
 	std::vector<GLuint> static generateSphereIndices(unsigned int sectorCount, unsigned int stackCount);
-	glm::mat4 getCornerTranslation(int width, int height, float camInitalZ, float fov);
+	glm::mat4 getCornerTranslation(
+		int width, int height,
+		float camZ,
+		float fov,
+		float distanceFromCamera,
+		bool bottomRight);
 };
 
 #endif // !SPHERE_CLASS_H
