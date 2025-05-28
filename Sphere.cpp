@@ -9,6 +9,14 @@
 #include <vector>
 
 #include "shaderClass.h"
+#include <string>      // for std::string
+#include <sstream>     // for std::ostringstream
+
+void static DebugVec3(const std::string& label, const glm::vec3& v) {
+	std::ostringstream oss;
+	oss << label << ": (" << v.x << ", " << v.y << ", " << v.z << ")\n";
+	OutputDebugStringA(oss.str().c_str());
+}
 
 Sphere::Sphere(
 	float radius, 
@@ -58,50 +66,59 @@ void Sphere::Update() {
 }
 
 void Sphere::Draw(
-	Shader shader, 
-	float orientationAngle, 
-	float rotationAngle, 
-	glm::vec3 orientationUnitVect, 
-	glm::vec3 rotationUnitVect) 
+	Shader shader,
+	float orientationAngle,
+	float rotationAngle,
+	glm::vec3 orientationUnitVect,
+	glm::vec3 rotationUnitVect)
 {
-	// Prevent if from rotating out of existence, translate it right of screen.
-	model = translation;
+	glm::mat4 model = glm::mat4(1.0f);
 
-	// Rotates the sphere 90 degrees down so the americas are facing the camera by default.
-	glm::mat4 orientation = glm::rotate(model, glm::radians(orientationAngle), orientationUnitVect);
+	// Apply fixed orientation
+	model = glm::rotate(model, glm::radians(orientationAngle), orientationUnitVect);
 
-	// Controls the sphere's rotation around a given axis aka rotationUnitVect. 
-	glm::mat4 rotation = glm::rotate(model, glm::radians(rotationAngle), rotationUnitVect);
+	// Apply idle rotation (only changes over time)
+	model = glm::rotate(model, glm::radians(rotationAngle), rotationUnitVect);
 
-	// Apply the orientation and rotation to the sphere
-	model = orientation * rotation;
+	model = translation * model;
 
-	// Pass the model matrix to the shader
 	GLuint modelLoc = glGetUniformLocation(shader.ID, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
 }
+
 
 glm::mat4 Sphere::getCornerTranslation(
 	int width, int height,
 	float camZ,
 	float fov,
 	float distanceFromCamera,
-	bool bottomRight) 
+	bool bottomRight)
 {
 	float aspect = (float)width / (float)height;
 
 	float halfHeight = tan(glm::radians(fov / 2.0f)) * distanceFromCamera;
 	float halfWidth = halfHeight * aspect;
+	
 
-	float xOffset = (halfWidth / 2.0f) - radius;
-	float yOffset = (halfHeight / 2.0f) - radius;
+	float xOffset = halfWidth - ( 0.15f + radius);
+	float yOffset = halfHeight - ( 0.05f + radius);
+
 
 	float x = bottomRight ? +xOffset : -xOffset;
 	float y = bottomRight ? -yOffset : +yOffset;
 	float z = camZ - distanceFromCamera;
 
-	return glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+	glm::vec3 translation = glm::vec3(x, y, z);
+	DebugVec3("---------------------------Sphere Translation", translation);
+	return glm::translate(glm::mat4(1.0f), translation);
+}
+
+void Sphere::Inputs(GLFWwindow* window, float deltatime) {
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+		isInteracting = true;
+	} else {
+		isInteracting = false;
+	}
 }
 
 std::vector<GLfloat> Sphere::generateSphereVertices(float radius, unsigned int sectorCount, unsigned int stackCount) {

@@ -155,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\Downloads\pfp.jpg" />
+    <Image Include="ColoredRegions.jpg" />
     <Image Include="earth.jpg" />
     <Image Include="newEarth.jpg" />
     <Image Include="obamman.jpg" />

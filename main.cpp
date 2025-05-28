@@ -102,7 +102,7 @@ static GLFWwindow* createGLFW_Window(
 #ifdef _WIN32
 // BE SKEPTICAL, MAY OR MAY NOT WORK. 
 // Currently creates nigh-impossible to remove wallpaper windows which are annoying.
-bool attachToDesktopWorkerW(HWND hwnd) {
+bool static attachToDesktopWorkerW(HWND hwnd) {
 	HWND progman = FindWindow(L"Progman", nullptr);
 	if (!progman) return false;
 
@@ -161,9 +161,9 @@ int main() {
 	glfwGetFramebufferSize(wnd, &width, &height);
 
 	// Create the sphere
-	Sphere sphere(0.5f, 144, 72, width, height, 45.0f, 3.0f, 3.0f);
+	Sphere sphere(0.3f, 144, 72, width, height, 45.0f, 3.0f, 3.0f);
 
-	// Creates shader obj~ect
+	// Creates shader object
 	Shader shaderProgram("default.vert", "default.frag");
 
 	// Generates Vertex Array Object and binds it
@@ -198,6 +198,7 @@ int main() {
 	LONG style = GetWindowLong(hwnd, GWL_EXSTYLE);
 	style |= WS_EX_LAYERED; // | WS_EX_TRANSPARENT
 	SetWindowLong(hwnd, GWL_EXSTYLE, style);
+	
 
 	SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
 
@@ -216,6 +217,7 @@ int main() {
 	while (!glfwWindowShouldClose(wnd)) {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, width, height, NULL);
 		double currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -224,16 +226,18 @@ int main() {
 		shaderProgram.Activate();
 	
 
-		camera.Inputs(wnd, (float)deltaTime, sphere);
+		camera.Inputs(wnd, (float)deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
-		
+		 
 		// Rotates the sphere around the z-axis
 		sphere.Draw(
-			shaderProgram, 
-			-90.0f, rotater * 1.0f,
-			glm::vec3(1.0f, 0.0f, 0.0f), 
-			glm::vec3(0.0f, 0.0f, 1.0f)
+			shaderProgram,
+			sphere.initialOrientationAngle,
+			sphere.naturalRotation,
+			sphere.initialOrientationAxis,
+			sphere.naturalRotationAxis
 		);
+
 		
 		// Binds texture so that is appears in rendering
 		image.Bind();
@@ -247,7 +251,14 @@ int main() {
 		}
 		glfwSwapBuffers(wnd);
 		glfwPollEvents();
-		rotater++;
+		sphere.Inputs(wnd, (float)deltaTime);
+
+		// If not interacting, keep the globe rotating
+		if (!sphere.isInteracting) {
+			sphere.naturalRotation += 20.0f * (float)deltaTime;
+			if (sphere.naturalRotation > 360.0f)
+				sphere.naturalRotation -= 360.0f;
+		}
 	}
 
 	// Delete all the objects created. "Before creation, comes destruction" - Beerus... Should've learned to code.

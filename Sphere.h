@@ -19,6 +19,13 @@ public:
 		float fovDeg,
 		float camInit_Z,
 		float distanceFromCamera);
+	
+	float naturalRotation = 0.0f;
+	bool isInteracting = false;
+	float initialOrientationAngle = -90.0f; // rotation to fix initial orientation
+	glm::vec3 initialOrientationAxis = glm::vec3(1.0f, 0.0f, 0.0f); // x-axis
+	glm::vec3 naturalRotationAxis = glm::vec3(0.0f, 0.0f, 1.0f); // z-axis
+
 	~Sphere();
 	std::vector<GLfloat> getVertices();
 	std::vector<GLuint> getIndices();
@@ -31,15 +38,19 @@ public:
 	void setSectorCount(int sectorCount);
 	void setStackCount(int stackCount);
 	void setRadius(float radius);
+	void Inputs(GLFWwindow* window, float deltatime);
 
 private:
 	// Create the model matrix
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 translation;
 
+	bool isDragging = false;
 	int sectorCount;
 	int stackCount;
-	float radius;
+	float radius; 
+
+
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> indices;
 

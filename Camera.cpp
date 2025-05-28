@@ -16,7 +16,7 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shade
 
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(projection * view));
 }
-void Camera::Inputs(GLFWwindow* window, float deltatime, Sphere sphere)
+void Camera::Inputs(GLFWwindow* window, float deltatime)
 {
 	if (freeCamera) {
 		// Handles key inputs
@@ -62,7 +62,7 @@ void Camera::Inputs(GLFWwindow* window, float deltatime, Sphere sphere)
 			// Prevents camera from jumping on the first click
 			if (firstClick)
 			{
-				glfwSetCursorPos(window, (width / 2), (height / 2));
+				glfwSetCursorPos(window, (double)(width / 2), (double)(height / 2));
 				firstClick = false;
 			}
 
@@ -90,7 +90,7 @@ void Camera::Inputs(GLFWwindow* window, float deltatime, Sphere sphere)
 			orientation = glm::rotate(orientation, glm::radians(-rotY), UP);
 
 			// Sets mouse cursor to the middle of the screen so that it doesn't end up roaming around
-			glfwSetCursorPos(window, (width / 2), (height / 2));
+			glfwSetCursorPos(window, (double)(width / 2), (double)(height / 2));
 		}
 		else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
 		{
@@ -99,11 +99,5 @@ void Camera::Inputs(GLFWwindow* window, float deltatime, Sphere sphere)
 			// Makes sure the next time the camera looks around it doesn't jump
 			firstClick = true;
 		}
-	}
-	else {
-		// TODO: in static camera mode, clicking should interact with the sphere while passing through
-		//	the rest of the window. 
-		// - Clicking and holding should rotate the sphere in direction of mouse drag. 
-		//	- This should override its original rotation.
 	}
 }
