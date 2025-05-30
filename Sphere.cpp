@@ -111,7 +111,6 @@ glm::mat4 Sphere::getCornerTranslation(
 	float z = camZ - distanceFromCamera;
 
 	glm::vec3 translation = glm::vec3(x, y, z);
-	DebugVec3("---------------------------Sphere Translation", translation);
 	return glm::translate(glm::mat4(1.0f), translation);
 }
 
@@ -120,22 +119,11 @@ void Sphere::Inputs(GLFWwindow* window, float deltatime, int width, int height, 
 		isInteracting = true;
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
 		float x, y;
 
 		glm::vec3 spherePos = glm::vec3(translation[3]);
-		DebugVec3("Sphere Pos: ", spherePos);
-		float distanceFromCamera = sqrt(
-			pow((spherePos.x - camPos.x), 2) + 
-			pow((spherePos.y - camPos.y), 2) + 
-			pow((spherePos.z - camPos.z), 2));
 
-		glm::vec3 screenPos = glm::project(
-			spherePos,
-			camViewMat4,
-			camProjMat4,
-			glm::vec4(0, 0, width, height)
-		);
+		glm::vec3 screenPos = getSphereScreenVector(width, height, camPos, camViewMat4, camProjMat4);
 		x = screenPos.x;
 		y = height - screenPos.y;
 
@@ -143,26 +131,59 @@ void Sphere::Inputs(GLFWwindow* window, float deltatime, int width, int height, 
 			glfwSetCursorPos(window, x, y);
 			firstClick = false;
 		}
-		double mouseX, mouseY;
-		glfwGetCursorPos(window, &mouseX, &mouseY);
-
-		float rotx = sensitivity - (mouseX - x) / (2 * radius);
-		float roty = sensitivity - (mouseY - y) / (2 * radius);
-
-		glm::vec3 newRotation = 
-			glm::rotate(rotationAxis, 
-			glm::radians(-rotx), 
-			glm::normalize(glm::cross(rotationAxis, UP)));
-		
-		rotationAxis = glm::rotate(rotationAxis, glm::radians(-roty), UP);
-
-		glfwSetCursorPos(window, x, y);
 	} else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		firstClick = true;
 		isInteracting = false;
 	} else {
 		isInteracting = false;
+	}
+}
+
+glm::vec3 Sphere::getSphereScreenVector(int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4, glm::mat4 camProjMat4) {
+	glm::vec3 spherePos = glm::vec3(translation[3]);
+
+	glm::vec3 screenPos = glm::project(
+		spherePos,
+		camViewMat4,
+		camProjMat4,
+		glm::vec4(0, 0, width, height));
+	return screenPos;
+}
+
+void Sphere::Rotate(GLFWwindow* window, float deltatime, int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4, glm::mat4 camProjMat4) {
+	if (!isInteracting) {
+		rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f); 
+		orientationAxis = glm::vec3(1.0f, 0.0f, 0.0f);
+		orientation = -90.0f;
+		rotation += 20.0f * deltatime;
+		if (rotation > 360.0f)
+			rotation -= 360.0f;
+	}
+	else if (isInteracting) {
+		double mouseX, mouseY;
+		glm::vec3 sphereScreenPos = getSphereScreenVector(width, height, camPos, camViewMat4, camProjMat4);
+
+		glfwGetCursorPos(window, &mouseX, &mouseY);
+		float x = sphereScreenPos.x;
+		float y = height - sphereScreenPos.y;
+
+		float rotx = (mouseX - x) / (2 * radius);
+		float roty = (mouseY - y) / (2 * radius);
+		
+		if (abs(rotx) < 2 && abs(rotx) > 1) {
+			rotation += 0;
+		} else {
+			rotation += sensitivity * -rotx * deltatime;
+		}
+		if (abs(roty) < 2 && abs(roty) > 1) {
+			orientation += 0;
+		}
+		else {
+			orientation += sensitivity * -roty * deltatime;
+		}
+
+		glfwSetCursorPos(window, x, y);
 	}
 }
 

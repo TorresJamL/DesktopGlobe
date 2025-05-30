@@ -26,7 +26,8 @@ public:
 	bool firstClick = true;
 	bool isInteracting = false;
 	float rotation = 0.0f;
-	float orientationAngle = -90.0f; // rotation to fix initial orientation
+	float sensitivity = 10.0f;
+	float orientation = -90.0f; // rotation to fix initial orientation
 	glm::vec3 orientationAxis = glm::vec3(1.0f, 0.0f, 0.0f); // x-axis
 	glm::vec3 rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f); // z-axis
 
@@ -43,7 +44,12 @@ public:
 	void setStackCount(int stackCount);
 	void setRadius(float radius);
 	void Inputs(GLFWwindow* window, float deltatime, int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4, glm::mat4 camProjMat4);
-
+	glm::vec3 getSphereScreenVector(
+		int width, int height, 
+		glm::vec3 camPos, 
+		glm::mat4 camViewMat4,
+		glm::mat4 camProjMat4);
+	void Rotate(GLFWwindow* window, float deltatime, int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4, glm::mat4 camProjMat4);
 private:
 	// Create the model matrix
 	glm::mat4 model = glm::mat4(1.0f);
@@ -54,7 +60,6 @@ private:
 	int sectorCount;
 	int stackCount;
 	float radius; 
-	float sensitivity = 10.0f;
 
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> indices;

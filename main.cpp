@@ -100,36 +100,16 @@ static GLFWwindow* createGLFW_Window(
 }
 
 #ifdef _WIN32
-// Currently creates nigh-impossible to remove wallpaper windows which are annoying.
-bool static attachToDesktopWorkerW(HWND hwnd) {
-	HWND progman = FindWindow(L"Progman", nullptr);
-	if (!progman) return false;
-
-	// Force creation of WorkerW
-	SendMessageTimeout(progman, 0x052C, 0, 0, SMTO_NORMAL, 1000, nullptr);
-
-	HWND workerw = nullptr;
-
-	EnumWindows([](HWND top, LPARAM lParam) -> BOOL {
-		HWND shellView = FindWindowEx(top, nullptr, L"SHELLDLL_DefView", nullptr);
-		if (shellView) {
-			// Found the desktop icons container — next sibling WorkerW is what we want
-			HWND* out = reinterpret_cast<HWND*>(lParam);
-			*out = FindWindowEx(nullptr, top, L"WorkerW", nullptr);
-			return FALSE;
-		}
-		return TRUE;
-		}, reinterpret_cast<LPARAM>(&workerw));
-
-	if (workerw) {
-		SetParent(hwnd, workerw);
-		OutputDebugString(L"[attachToDesktopWorkerW] Success.\n");
-		return true;
-	}
-	else {
-		OutputDebugString(L"[attachToDesktopWorkerW] Failed.\n");
+bool static attachToDesktop(HWND hwnd) {
+	HWND desktop = FindWindow(L"ProgMan", L"Program Manager");
+	if (desktop == NULL)
+	{
 		return false;
 	}
+
+	ShowWindow(hwnd, SW_MAXIMIZE);
+	SetParent(hwnd, desktop);
+	return true;
 }
 #endif
 
@@ -141,9 +121,9 @@ int main() {
 
 	// Gets Win32 window from the glfw window. A lot of windowing happening here.
 	HWND hwnd = glfwGetWin32Window(wnd);
-	// Attach the window to the desktop so it is behind the apps but infront of desktop.
-	//  Currently extremely buggy and does not work.
-	//attachToDesktopWorkerW(hwnd);
+	
+	// Attaches the window to the desktop window, aka, makes it a child of the desktop.
+	if (!attachToDesktop(hwnd)) return -1;
 
 	// I... honestly don't know. Puts the window into context. Whatever that means.
 	glfwMakeContextCurrent(wnd);
@@ -157,7 +137,6 @@ int main() {
 	}
 	int width, height;
 	glfwGetFramebufferSize(wnd, &width, &height);
-
 
 	// Creates shader object
 	Shader shaderProgram("default.vert", "default.frag");
@@ -234,20 +213,14 @@ int main() {
 		// Rotates the sphere around the z-axis
 		sphere.Draw(
 			shaderProgram,
-			sphere.orientationAngle,
+			sphere.orientation,
 			sphere.rotation,
 			sphere.orientationAxis,
 			sphere.rotationAxis
 		);
 
 		sphere.Inputs(wnd, (float)deltaTime, width, height, camera.position, camera.view, camera.projection);
-
-		if (!sphere.isInteracting) {
-			sphere.rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f);
-			sphere.rotation += 20.0f * (float)deltaTime;
-			if (sphere.rotation > 360.0f)
-				sphere.rotation -= 360.0f;
-		}
+		sphere.Rotate(wnd, (float)deltaTime, width, height, camera.position, camera.view, camera.projection);
 
 		// Binds texture so that is appears in rendering
 		image.Bind();
