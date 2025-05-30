@@ -2,7 +2,11 @@
 #include <Windows.h>
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp>
 #include "GLFW/glfw3.h"
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -32,8 +36,8 @@ Sphere::Sphere(
 	this->sectorCount = sectorCount;
 	this->stackCount = stackCount;
 	this->translation = getCornerTranslation(screenWidth, screenHeight, camInit_Z, fovDeg, distanceFromCamera, true);
-	vertices = generateSphereVertices(radius, sectorCount, stackCount);
-	indices = generateSphereIndices(sectorCount, stackCount);
+	this->vertices = generateSphereVertices(radius, sectorCount, stackCount);
+	this->indices = generateSphereIndices(sectorCount, stackCount);
 }
 
 Sphere::~Sphere() {
@@ -77,15 +81,15 @@ void Sphere::Draw(
 	// Apply fixed orientation
 	model = glm::rotate(model, glm::radians(orientationAngle), orientationUnitVect);
 
-	// Apply idle rotation (only changes over time)
+	// Apply idle rotation 
 	model = glm::rotate(model, glm::radians(rotationAngle), rotationUnitVect);
 
+	// Apply the corner translation to the model.
 	model = translation * model;
 
 	GLuint modelLoc = glGetUniformLocation(shader.ID, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 }
-
 
 glm::mat4 Sphere::getCornerTranslation(
 	int width, int height,
@@ -99,10 +103,8 @@ glm::mat4 Sphere::getCornerTranslation(
 	float halfHeight = tan(glm::radians(fov / 2.0f)) * distanceFromCamera;
 	float halfWidth = halfHeight * aspect;
 	
-
 	float xOffset = halfWidth - ( 0.15f + radius);
 	float yOffset = halfHeight - ( 0.05f + radius);
-
 
 	float x = bottomRight ? +xOffset : -xOffset;
 	float y = bottomRight ? -yOffset : +yOffset;
@@ -113,9 +115,52 @@ glm::mat4 Sphere::getCornerTranslation(
 	return glm::translate(glm::mat4(1.0f), translation);
 }
 
-void Sphere::Inputs(GLFWwindow* window, float deltatime) {
+void Sphere::Inputs(GLFWwindow* window, float deltatime, int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4 , glm::mat4 camProjMat4) {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 		isInteracting = true;
+
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+		float x, y;
+
+		glm::vec3 spherePos = glm::vec3(translation[3]);
+		DebugVec3("Sphere Pos: ", spherePos);
+		float distanceFromCamera = sqrt(
+			pow((spherePos.x - camPos.x), 2) + 
+			pow((spherePos.y - camPos.y), 2) + 
+			pow((spherePos.z - camPos.z), 2));
+
+		glm::vec3 screenPos = glm::project(
+			spherePos,
+			camViewMat4,
+			camProjMat4,
+			glm::vec4(0, 0, width, height)
+		);
+		x = screenPos.x;
+		y = height - screenPos.y;
+
+		if (firstClick) {
+			glfwSetCursorPos(window, x, y);
+			firstClick = false;
+		}
+		double mouseX, mouseY;
+		glfwGetCursorPos(window, &mouseX, &mouseY);
+
+		float rotx = sensitivity - (mouseX - x) / (2 * radius);
+		float roty = sensitivity - (mouseY - y) / (2 * radius);
+
+		glm::vec3 newRotation = 
+			glm::rotate(rotationAxis, 
+			glm::radians(-rotx), 
+			glm::normalize(glm::cross(rotationAxis, UP)));
+		
+		rotationAxis = glm::rotate(rotationAxis, glm::radians(-roty), UP);
+
+		glfwSetCursorPos(window, x, y);
+	} else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		firstClick = true;
+		isInteracting = false;
 	} else {
 		isInteracting = false;
 	}
@@ -125,7 +170,7 @@ std::vector<GLfloat> Sphere::generateSphereVertices(float radius, unsigned int s
 	std::vector<GLfloat> vertices;
 
 	for (unsigned int i = 0; i <= stackCount; ++i) {
-		float stackAngle = glm::pi<float>() / 2 - i * glm::pi<float>() / stackCount; // from pi/2 to -pi/2
+		float stackAngle = (glm::pi<float>() / 2) - (i * (glm::pi<float>() / stackCount)); // from pi/2 to -pi/2
 		float xy = radius * cosf(stackAngle);
 		float z = radius * sinf(stackAngle);
 

@@ -100,7 +100,6 @@ static GLFWwindow* createGLFW_Window(
 }
 
 #ifdef _WIN32
-// BE SKEPTICAL, MAY OR MAY NOT WORK. 
 // Currently creates nigh-impossible to remove wallpaper windows which are annoying.
 bool static attachToDesktopWorkerW(HWND hwnd) {
 	HWND progman = FindWindow(L"Progman", nullptr);
@@ -135,7 +134,6 @@ bool static attachToDesktopWorkerW(HWND hwnd) {
 #endif
 
 
-// FreeCodeCamp vid: https://youtu.be/45MIykWJ-C4
 int main() {
 	GLFWwindow* wnd = createGLFW_Window(500, 500, "Transparent", NULL, NULL);
 	// Error check for if the window doesn't load, aka it equals null.
@@ -160,11 +158,13 @@ int main() {
 	int width, height;
 	glfwGetFramebufferSize(wnd, &width, &height);
 
-	// Create the sphere
-	Sphere sphere(0.3f, 144, 72, width, height, 45.0f, 3.0f, 3.0f);
 
 	// Creates shader object
 	Shader shaderProgram("default.vert", "default.frag");
+	
+	// Create the sphere
+	Sphere sphere(0.2f, 144, 72, width, height, 45.0f, 3.0f, 3.0f);
+
 
 	// Generates Vertex Array Object and binds it
 	VertexArrayObject VAO1;
@@ -189,9 +189,9 @@ int main() {
 	image.texUnit(shaderProgram, "tex0", 0);
 
 	
-	// Extends the window frame into the client area.
 	// Gets rid of the white bar background behind the window's name, aka the frame.
 	MARGINS margins = { -1 };
+	// Extends the window frame into the client area.
 	DwmExtendFrameIntoClientArea(hwnd, &margins);
 
 	// More code to make it transparent.
@@ -206,11 +206,13 @@ int main() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_DEPTH_TEST);
-
+	
 	// Create the camera
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 3.0f));
+
 	double deltaTime = 0.0;
 	double lastFrame = 0.0;
+	double currentFrame = 0.0;
 	int rotater = 0;
 
 	camera.freeCamera = false;
@@ -218,7 +220,7 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, width, height, NULL);
-		double currentFrame = glfwGetTime();
+		currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		
@@ -232,13 +234,21 @@ int main() {
 		// Rotates the sphere around the z-axis
 		sphere.Draw(
 			shaderProgram,
-			sphere.initialOrientationAngle,
-			sphere.naturalRotation,
-			sphere.initialOrientationAxis,
-			sphere.naturalRotationAxis
+			sphere.orientationAngle,
+			sphere.rotation,
+			sphere.orientationAxis,
+			sphere.rotationAxis
 		);
 
-		
+		sphere.Inputs(wnd, (float)deltaTime, width, height, camera.position, camera.view, camera.projection);
+
+		if (!sphere.isInteracting) {
+			sphere.rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f);
+			sphere.rotation += 20.0f * (float)deltaTime;
+			if (sphere.rotation > 360.0f)
+				sphere.rotation -= 360.0f;
+		}
+
 		// Binds texture so that is appears in rendering
 		image.Bind();
 
@@ -251,14 +261,6 @@ int main() {
 		}
 		glfwSwapBuffers(wnd);
 		glfwPollEvents();
-		sphere.Inputs(wnd, (float)deltaTime);
-
-		// If not interacting, keep the globe rotating
-		if (!sphere.isInteracting) {
-			sphere.naturalRotation += 20.0f * (float)deltaTime;
-			if (sphere.naturalRotation > 360.0f)
-				sphere.naturalRotation -= 360.0f;
-		}
 	}
 
 	// Delete all the objects created. "Before creation, comes destruction" - Beerus... Should've learned to code.

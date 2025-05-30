@@ -2,7 +2,11 @@
 #define SPHERE_CLASS_H
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp>
 #include "GLFW/glfw3.h"
 
 #include <vector>
@@ -19,12 +23,12 @@ public:
 		float fovDeg,
 		float camInit_Z,
 		float distanceFromCamera);
-	
-	float naturalRotation = 0.0f;
+	bool firstClick = true;
 	bool isInteracting = false;
-	float initialOrientationAngle = -90.0f; // rotation to fix initial orientation
-	glm::vec3 initialOrientationAxis = glm::vec3(1.0f, 0.0f, 0.0f); // x-axis
-	glm::vec3 naturalRotationAxis = glm::vec3(0.0f, 0.0f, 1.0f); // z-axis
+	float rotation = 0.0f;
+	float orientationAngle = -90.0f; // rotation to fix initial orientation
+	glm::vec3 orientationAxis = glm::vec3(1.0f, 0.0f, 0.0f); // x-axis
+	glm::vec3 rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f); // z-axis
 
 	~Sphere();
 	std::vector<GLfloat> getVertices();
@@ -38,18 +42,19 @@ public:
 	void setSectorCount(int sectorCount);
 	void setStackCount(int stackCount);
 	void setRadius(float radius);
-	void Inputs(GLFWwindow* window, float deltatime);
+	void Inputs(GLFWwindow* window, float deltatime, int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4, glm::mat4 camProjMat4);
 
 private:
 	// Create the model matrix
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 translation;
+	glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	bool isDragging = false;
 	int sectorCount;
 	int stackCount;
 	float radius; 
-
+	float sensitivity = 10.0f;
 
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> indices;
