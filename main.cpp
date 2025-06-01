@@ -17,133 +17,97 @@
 #include "Texture.h"
 #include "Camera.h"
 #include "Sphere.h"
+#include "GlobeWindow.h"
 
-// Define vertices for a equi-Triangle made of three triangles with an open space in the middle that happens to be triangular. !THIS EX, DOES NOT HAVE TEXTURE!
-//GLfloat vertices[] = {
-//	//  |<--------------Coordinates-------------->|    |<-----Colors----->|
-//		-0.5f, -0.5f * float(sqrt(3)) / 3,    0.0f,		0.8f, 0.3f,  0.02f,		// Lower left corner
-//		 0.5f, -0.5f * float(sqrt(3)) / 3,    0.0f,		0.8f, 0.3f,  0.02f,		// lower right corner
-//		 0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f,		1.0f, 0.6f,  0.32f,		// Upper corner
-//		-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,		0.9f, 0.45f, 0.17f,		// Inner left
-//		 0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,		0.9f, 0.45f, 0.17f,		// Inner right
-//		 0.0f, -0.5f * float(sqrt(3)) / 3,    0.0f,		0.8f, 0.3f,  0.02f		// Inner down	
-//};
-//GLuint indices[] = {
-//	0, 3, 5, // lower left tri
-//	3, 2, 4, // lower right tri
-//	5, 4, 1 // upper tri
-//};
-
-// Defines vertex coordinates for a square, and its colors too. 
-// Nothing really special about this one unfortunately but, hey, its fair to be square. :thumbsup:
-// This also generates the coordinate system for the texture and how it applies to the vertices. kinda. 
-// I explained it poorly.
-//GLfloat vertices[] = {
-////  |<--Coordinates-->|    |<----Colors---->|  |<Texture Coords>|
-//	-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, // lower left corner
-//	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // upper left corner
-//	 0.5f,	0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // upper right corner
-//	 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f, // lower right corner
-//};
-//// Define the array of indices (Know as an element array). This tells OpenGL which vertices to connect and in what order to form primitives.
-//// Without indices you repeat shared vertices for each triangle, making it good for efficiency!
-//GLuint indices[] = {
-//	0, 2, 1, // upper triangle
-//	0, 3, 2, // lower tri-angles (im so funny.) -> (correction: I'm so funny!)
-//};
-
-/*
-TIME FOR 3D BABY, WHOOOO
-@1:00:00 in, drawing a pyramid. Sphere is SO close yall.
-*/
-// Vertices coordinates
-//GLfloat vertices[] = {
-////	|<--Coordinates-->|    |<------Colors----->|   |<Texture Coords>|
-//	-0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-//	-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
-//	 0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-//	 0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
-//	 0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	2.5f, 5.0f
-//};
-//
-//// Indices for vertices order
-//GLuint indices[] = {
-//	0, 1, 2,
-//	0, 2, 3,
-//	0, 1, 4,
-//	1, 2, 4,
-//	2, 3, 4,
-//	3, 0, 4
-//};
+///*
+// * Prints to Debug
+// */
+//void print(std::string str) {
+//	str += "\n";
+//	std::wstring wstr(str.begin(), str.end());
+//	OutputDebugString(wstr.c_str());
+//}
+//std::string GetWindowTitle(HWND hwnd) {
+//	char title[256];
+//	int length = GetWindowTextA(hwnd, title, sizeof(title));
+//	if (length > 0)
+//		return std::string(title);
+//	else
+//		return "[No Title]";
+//}
 
 /*
 Makes a GLFWwindow*
 @returns GLFWwindow* : A transparent, maximized, resizable, undecorated window
 */
-static GLFWwindow* createGLFW_Window(
-		int width, 
-		int height, 
-		const char *title, 
-		GLFWmonitor* monitor, 
-		GLFWwindow* share) {	
-	glfwInit();
-	// Window hints to tell the window what it should be. 
-	// This is because all good windows should follow social norms.
-	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE); // Set GLFW_TRUE to GLFW_FALSE for the window to be completely transparent.
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // TRUE to resize, false otherwise. 
-	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE); // C'mon, i dont need to say it.
+//static GLFWwindow* createGLFW_Window(
+//		int width, 
+//		int height, 
+//		const char *title, 
+//		GLFWmonitor* monitor, 
+//		GLFWwindow* share) {	
+//	glfwInit();
+//	// Window hints to tell the window what it should be. 
+//	// This is because all good windows should follow social norms.
+//	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+//	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE); // Set GLFW_TRUE to GLFW_FALSE for the window to be completely transparent.
+//	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // TRUE to resize, false otherwise. 
+//	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE); // C'mon, i dont need to say it.
+//
+//	// Creates the transparent window.
+//	GLFWwindow* wnd = glfwCreateWindow(500, 500, "Transparent", NULL, NULL);
+//	return wnd;
+//}
 
-	// Creates the transparent window.
-	GLFWwindow* wnd = glfwCreateWindow(500, 500, "Transparent", NULL, NULL);
-	return wnd;
-}
+//std::vector<HWND> topLevelWindows;
+//BOOL CALLBACK EnumWindowsZ(HWND hwnd, LPARAM lParam) {
+//	if (!IsWindowVisible(hwnd)) return TRUE; // Skip invisible windows
+//
+//	topLevelWindows.push_back(hwnd);
+//	return TRUE;
+//}
+//
+///*
+// * Retrieves the window at the provided z-order. 0 being the top most window.
+// * The size-1 is the program manager and must be the last one in the list. 
+// * @param z_Order The z index of the window you are looking for.
+// */
+//HWND static RetrieveWindowAtZ(int z_Order) {
+//	topLevelWindows.clear();
+//	EnumWindows(EnumWindowsZ, 0);
+//	return topLevelWindows[z_Order];
+//}
 
-#ifdef _WIN32
-bool static attachToDesktop(HWND hwnd) {
-	HWND desktop = FindWindow(L"ProgMan", L"Program Manager");
-	if (desktop == NULL)
-	{
-		return false;
-	}
-
-	ShowWindow(hwnd, SW_MAXIMIZE);
-	SetParent(hwnd, desktop);
-	return true;
-}
-#endif
-
+//void sendHWND_ToZ(HWND hwnd, int z) {
+//	SetWindowPos(hwnd, RetrieveWindowAtZ(z-1), 0, 0, 0, 0,
+//		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+//}
 
 int main() {
-	GLFWwindow* wnd = createGLFW_Window(500, 500, "Transparent", NULL, NULL);
-	// Error check for if the window doesn't load, aka it equals null.
-	if (!wnd) { glfwTerminate(); return -1; }
+	//GLFWwindow* wnd = createGLFW_Window(500, 500, "Transparent", NULL, NULL);
+	//// Error check for if the window doesn't load, aka it equals null.
+	//if (!wnd) { glfwTerminate(); return -1; }
 
-	// Gets Win32 window from the glfw window. A lot of windowing happening here.
-	HWND hwnd = glfwGetWin32Window(wnd);
-	
-	// Attaches the window to the desktop window, aka, makes it a child of the desktop.
-	if (!attachToDesktop(hwnd)) return -1;
+	//// Gets Win32 window from the glfw window. A lot of windowing happening here.
+	//HWND hwnd = glfwGetWin32Window(wnd);
+	//
+	//// I... honestly don't know. Puts the window into context. Whatever that means.
+	//glfwMakeContextCurrent(wnd);
+	//glewExperimental = GL_TRUE;
+	//if(glewInit() != GLEW_OK) {
+	//	// If glew is not ok, terminate everything. On sight. Otherwise, continue on.
+	//	std::cerr << "Failed to initialize GLEW" << std::endl;
+	//	glfwDestroyWindow(wnd);
+	//	glfwTerminate();
+	//	return -1;
+	//}
+	//int width, height;
+	//glfwGetFramebufferSize(wnd, &width, &height);
 
-	// I... honestly don't know. Puts the window into context. Whatever that means.
-	glfwMakeContextCurrent(wnd);
-	glewExperimental = GL_TRUE;
-	if(glewInit() != GLEW_OK) {
-		// If glew is not ok, terminate everything. On sight. Otherwise, continue on.
-		std::cerr << "Failed to initialize GLEW" << std::endl;
-		glfwDestroyWindow(wnd);
-		glfwTerminate();
-		return -1;
-	}
-	int width, height;
-	glfwGetFramebufferSize(wnd, &width, &height);
+	GlobeWindow wnd;
 
-	// Creates shader object
 	Shader shaderProgram("default.vert", "default.frag");
-	
-	// Create the sphere
-	Sphere sphere(0.2f, 144, 72, width, height, 45.0f, 3.0f, 3.0f);
-
+	Sphere sphere(0.2f, 144, 72, wnd.width, wnd.height, 45.0f, 3.0f, 3.0f);
 
 	// Generates Vertex Array Object and binds it
 	VertexArrayObject VAO1;
@@ -168,26 +132,14 @@ int main() {
 	image.texUnit(shaderProgram, "tex0", 0);
 
 	
-	// Gets rid of the white bar background behind the window's name, aka the frame.
-	MARGINS margins = { -1 };
-	// Extends the window frame into the client area.
-	DwmExtendFrameIntoClientArea(hwnd, &margins);
-
-	// More code to make it transparent.
-	LONG style = GetWindowLong(hwnd, GWL_EXSTYLE);
-	style |= WS_EX_LAYERED; // | WS_EX_TRANSPARENT
-	SetWindowLong(hwnd, GWL_EXSTYLE, style);
-	
-
-	SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+	wnd.SetWindowStyles();
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_DEPTH_TEST);
 	
-	// Create the camera
-	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 3.0f));
+	Camera camera(wnd.width, wnd.height, glm::vec3(0.0f, 0.0f, 3.0f));
 
 	double deltaTime = 0.0;
 	double lastFrame = 0.0;
@@ -195,10 +147,12 @@ int main() {
 	int rotater = 0;
 
 	camera.freeCamera = false;
-	while (!glfwWindowShouldClose(wnd)) {
+	
+	while (!glfwWindowShouldClose(wnd.GLFWwnd)) {
+		
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, width, height, NULL);
+
 		currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -207,7 +161,7 @@ int main() {
 		shaderProgram.Activate();
 	
 
-		camera.Inputs(wnd, (float)deltaTime);
+		camera.Inputs(wnd.GLFWwnd, (float)deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 		 
 		// Rotates the sphere around the z-axis
@@ -219,20 +173,22 @@ int main() {
 			sphere.rotationAxis
 		);
 
-		sphere.Inputs(wnd, (float)deltaTime, width, height, camera.position, camera.view, camera.projection);
-		sphere.Rotate(wnd, (float)deltaTime, width, height, camera.position, camera.view, camera.projection);
+		sphere.Inputs(wnd.GLFWwnd, (float)deltaTime, wnd.width, wnd.height, camera.position, camera.view, camera.projection);
+		sphere.Rotate(wnd.GLFWwnd, (float)deltaTime, wnd.width, wnd.height, camera.position, camera.view, camera.projection);
 
 		// Binds texture so that is appears in rendering
 		image.Bind();
 
 		VAO1.Bind();
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sphere.getIndices().size()), GL_UNSIGNED_INT, 0);
-		
+
+		glFlush(); 
+
+		wnd.updateMousePassThrough();
 		// End of draw space.
-		if (glfwGetKey(wnd, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-			glfwSetWindowShouldClose(wnd, 1);
-		}
-		glfwSwapBuffers(wnd);
+		wnd.ShouldClose();
+
+		glfwSwapBuffers(wnd.GLFWwnd);
 		glfwPollEvents();
 	}
 
@@ -242,8 +198,7 @@ int main() {
 	EBO1.Delete();
 	shaderProgram.Delete();
 	image.Delete();
-	glfwDestroyWindow(wnd);
-	glfwTerminate();
+	wnd.~GlobeWindow();
 	return 0;
 }
 /* 

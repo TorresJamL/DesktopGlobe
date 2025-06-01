@@ -131,7 +131,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="ElementBufferObject.cpp" />
+    <ClCompile Include="GlobeWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -146,7 +148,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="ElementBufferObject.h" />
+    <ClInclude Include="GlobeWindow.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Texture.h" />

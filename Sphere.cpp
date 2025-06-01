@@ -22,6 +22,10 @@ void static DebugVec3(const std::string& label, const glm::vec3& v) {
 	OutputDebugStringA(oss.str().c_str());
 }
 
+Sphere::Sphere() {
+
+}
+
 Sphere::Sphere(
 	float radius, 
 	int sectorCount, 
@@ -155,8 +159,8 @@ void Sphere::Rotate(GLFWwindow* window, float deltatime, int width, int height, 
 	if (!isInteracting) {
 		rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f); 
 		orientationAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-		orientation = -90.0f;
-		rotation += 20.0f * deltatime;
+		orientation = initOrientation;
+		rotation += initRotation * deltatime;
 		if (rotation > 360.0f)
 			rotation -= 360.0f;
 	}

@@ -14,6 +14,7 @@
 
 class Sphere {
 public:
+	Sphere();
 	Sphere(
 		float radius, 
 		int sectorCount, 
@@ -23,11 +24,14 @@ public:
 		float fovDeg,
 		float camInit_Z,
 		float distanceFromCamera);
+	bool isInteractable = false;
 	bool firstClick = true;
 	bool isInteracting = false;
+	float initRotation = 20.0f;
+	float initOrientation = -90.0f;
 	float rotation = 0.0f;
-	float sensitivity = 10.0f;
 	float orientation = -90.0f; // rotation to fix initial orientation
+	float sensitivity = 10.0f;
 	glm::vec3 orientationAxis = glm::vec3(1.0f, 0.0f, 0.0f); // x-axis
 	glm::vec3 rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f); // z-axis
 
