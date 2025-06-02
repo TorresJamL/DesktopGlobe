@@ -30,13 +30,13 @@ GlobeWindow::~GlobeWindow() {
 GlobeWindow::GlobeWindow(){
 	this->title = "Transparent Globe Win";
 	GLFWwnd = CreateGLFW_Window(title, NULL, NULL);
-	hwnd = glfwGetWin32Window(GLFWwnd);
+	m_hwnd = glfwGetWin32Window(GLFWwnd);
 }
 
 GlobeWindow::GlobeWindow(const char* title) {
 	this->title = title;
 	GLFWwnd = CreateGLFW_Window(title, NULL, NULL);
-	hwnd = glfwGetWin32Window(GLFWwnd);
+	m_hwnd = glfwGetWin32Window(GLFWwnd);
 }
 
 void GlobeWindow::ShouldClose() {
@@ -59,13 +59,13 @@ void GlobeWindow::updateMousePassThrough() {
 	bool isOverSphere = (depth < 1.0f); // 1.0 = background
 
 	// Update WS_EX_TRANSPARENT accordingly
-	LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+	LONG exStyle = GetWindowLong(m_hwnd, GWL_EXSTYLE);
 	if (isOverSphere) {
-		SetWindowLong(hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_TRANSPARENT); // allow clicks
+		SetWindowLong(m_hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_TRANSPARENT); // allow clicks
 		print("Allowing Clicks");
 	}
 	else {
-		SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_TRANSPARENT);  // pass through
+		SetWindowLong(m_hwnd, GWL_EXSTYLE, exStyle | WS_EX_TRANSPARENT);  // pass through
 		print("Passing Through");
 	}
 }
@@ -74,15 +74,41 @@ void GlobeWindow::SetWindowStyles() {
 	// Gets rid of the white bar background behind the window's name, aka the frame.
 	MARGINS margins = { -1 };
 	// Extends the window frame into the client area.
-	DwmExtendFrameIntoClientArea(hwnd, &margins);
+	DwmExtendFrameIntoClientArea(m_hwnd, &margins);
 
 	// More code to make it transparent.
-	LONG style = GetWindowLong(hwnd, GWL_EXSTYLE);
+	LONG style = GetWindowLong(m_hwnd, GWL_EXSTYLE);
 	style |= WS_EX_LAYERED; // | WS_EX_TRANSPARENT
-	SetWindowLong(hwnd, GWL_EXSTYLE, style);
+	SetWindowLong(m_hwnd, GWL_EXSTYLE, style);
 
 
-	SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+	SetLayeredWindowAttributes(m_hwnd, 0, 255, LWA_ALPHA);
+}
+
+
+BOOL CALLBACK GlobeWindow::EnumWindowsZ(HWND hwnd, LPARAM lParam) {
+	if (!IsWindowVisible(hwnd)) return true;
+
+	// Cast lParam back to GlobeWindow*
+	GlobeWindow* self = reinterpret_cast<GlobeWindow*>(lParam);
+	self->topLevelWindows.push_back(hwnd);
+	return true;
+}
+
+/*
+ * retrieves the window at the provided z-order. 0 being the top most window.
+ * the size-1 is the program manager and must be the last one in the list.
+ * @param z_order the z index of the window you are looking for.
+ */
+HWND GlobeWindow::RetrieveWindowAtZ(int z_order) {
+	topLevelWindows.clear();
+	EnumWindows(EnumWindowsZ, reinterpret_cast<LPARAM>(this));
+	return topLevelWindows[z_order];
+}
+
+void GlobeWindow::SendHWND_ToZ(int z) {
+	SetWindowPos(m_hwnd, RetrieveWindowAtZ(z - 1), 0, 0, 0, 0,
+		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 GLFWwindow* GlobeWindow::CreateGLFW_Window(

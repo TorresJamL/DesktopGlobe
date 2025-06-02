@@ -9,13 +9,15 @@
 #include <string>
 #include <iostream>
 #include <vector>
-
+// TODO: Add a desired Z order, that the main loop will force the window to be at if it isn't at it.
+//			Initialize this desiredZ_Order by getting the Z order after forcing the window to the bottom!
 class GlobeWindow {
 public:
 	const char* title;
 	GLFWwindow* GLFWwnd;
-	HWND hwnd;
+	HWND m_hwnd;
 	int width, height;
+	int desiredZ_order;
 
 	~GlobeWindow();
 	GlobeWindow();
@@ -23,6 +25,9 @@ public:
 	void ShouldClose();
 	void updateMousePassThrough();
 	void SetWindowStyles();
+	static BOOL CALLBACK EnumWindowsZ(HWND hwnd, LPARAM lParam);
+	HWND RetrieveWindowAtZ(int zOrder);
+	void SendHWND_ToZ(int z);
 private:
 	std::vector<HWND> topLevelWindows;
 
