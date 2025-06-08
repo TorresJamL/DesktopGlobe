@@ -44,11 +44,9 @@ int main() {
 	VBO1.Unbind();
 	EBO1.Unbind();
 
-
 	Texture image("newEarth.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
 	image.texUnit(shaderProgram, "tex0", 0);
 
-	
 	wnd.SetWindowStyles();
 
 	glEnable(GL_BLEND);
@@ -76,7 +74,6 @@ int main() {
 		
 		// Draw space
 		shaderProgram.Activate();
-	
 
 		camera.Inputs(wnd.GLFWwnd, (float)deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");

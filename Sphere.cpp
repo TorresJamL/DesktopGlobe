@@ -16,14 +16,11 @@
 #include <string>      // for std::string
 #include <sstream>     // for std::ostringstream
 
+
 void static DebugVec3(const std::string& label, const glm::vec3& v) {
 	std::ostringstream oss;
 	oss << label << ": (" << v.x << ", " << v.y << ", " << v.z << ")\n";
 	OutputDebugStringA(oss.str().c_str());
-}
-
-Sphere::Sphere() {
-
 }
 
 Sphere::Sphere(
@@ -119,6 +116,8 @@ glm::mat4 Sphere::getCornerTranslation(
 }
 
 void Sphere::Inputs(GLFWwindow* window, float deltatime, int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4 , glm::mat4 camProjMat4) {
+	if (!isInteractable) return;
+
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 		isInteracting = true;
 

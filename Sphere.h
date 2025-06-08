@@ -14,7 +14,6 @@
 
 class Sphere {
 public:
-	Sphere();
 	Sphere(
 		float radius, 
 		int sectorCount, 
@@ -24,7 +23,7 @@ public:
 		float fovDeg,
 		float camInit_Z,
 		float distanceFromCamera);
-	bool isInteractable = false;
+	bool isInteractable = true;
 	bool firstClick = true;
 	bool isInteracting = false;
 	float initRotation = 20.0f;
@@ -60,10 +59,12 @@ private:
 	glm::mat4 translation;
 	glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	bool isDragging = false;
 	int sectorCount;
 	int stackCount;
+	bool isDragging = false;
 	float radius; 
+	float initTime = 0.0f;
+	const float HELD_THRESHOLD = 3.0f;
 
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> indices;

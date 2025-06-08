@@ -22,12 +22,16 @@ public:
 	~GlobeWindow();
 	GlobeWindow();
 	GlobeWindow(const char* title);
+
+	int getInitialZ_Order();
+
 	void ShouldClose();
 	void updateMousePassThrough();
 	void SetWindowStyles();
+	void SendHWND_ToZ(int z);
+
 	static BOOL CALLBACK EnumWindowsZ(HWND hwnd, LPARAM lParam);
 	HWND RetrieveWindowAtZ(int zOrder);
-	void SendHWND_ToZ(int z);
 private:
 	std::vector<HWND> topLevelWindows;
 

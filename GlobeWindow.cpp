@@ -32,18 +32,26 @@ GlobeWindow::GlobeWindow(){
 	GLFWwnd = CreateGLFW_Window(title, NULL, NULL);
 	m_hwnd = glfwGetWin32Window(GLFWwnd);
 }
-
+/**
+ * @brief Constuctor with the option of a title.
+ * @param title: The title of the window.
+ */
 GlobeWindow::GlobeWindow(const char* title) {
 	this->title = title;
 	GLFWwnd = CreateGLFW_Window(title, NULL, NULL);
 	m_hwnd = glfwGetWin32Window(GLFWwnd);
 }
-
+/* If the esc-key is pressed, exit the window.*/
 void GlobeWindow::ShouldClose() {
 	if (glfwGetKey(GLFWwnd, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(GLFWwnd, 1);
 	}
 }
+/**
+ * @brief Checks the depth of the screen on the window for changes, 
+ *        if found, makes the window interactable. 
+ *        Otherwise clicks will pass through the window.
+ */
 void GlobeWindow::updateMousePassThrough() {
 	double xpos, ypos;
 	glfwGetCursorPos(GLFWwnd, &xpos, &ypos);
@@ -51,25 +59,26 @@ void GlobeWindow::updateMousePassThrough() {
 	// Flip Y because OpenGL origin is bottom-left, Windows is top-left
 	ypos = height - ypos;
 
-	// Read depth value at mouse position
 	float depth = 1.0f;
 	glReadPixels((int)xpos, (int)ypos, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
 
-	// Check if mouse is over a drawn object (like the sphere)
 	bool isOverSphere = (depth < 1.0f); // 1.0 = background
-
-	// Update WS_EX_TRANSPARENT accordingly
+	
 	LONG exStyle = GetWindowLong(m_hwnd, GWL_EXSTYLE);
+	exStyle |= WS_EX_LAYERED;
 	if (isOverSphere) {
-		SetWindowLong(m_hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_TRANSPARENT); // allow clicks
+		exStyle &= ~WS_EX_TRANSPARENT; // allow clicks
 		print("Allowing Clicks");
 	}
 	else {
-		SetWindowLong(m_hwnd, GWL_EXSTYLE, exStyle | WS_EX_TRANSPARENT);  // pass through
+		exStyle |= WS_EX_TRANSPARENT; // pass through
 		print("Passing Through");
 	}
+	SetWindowLong(m_hwnd, GWL_EXSTYLE, exStyle);
 }
-
+/**
+ * @brief Sets the window style to make it transparent.
+ */
 void GlobeWindow::SetWindowStyles() {
 	// Gets rid of the white bar background behind the window's name, aka the frame.
 	MARGINS margins = { -1 };
@@ -77,15 +86,20 @@ void GlobeWindow::SetWindowStyles() {
 	DwmExtendFrameIntoClientArea(m_hwnd, &margins);
 
 	// More code to make it transparent.
-	LONG style = GetWindowLong(m_hwnd, GWL_EXSTYLE);
-	style |= WS_EX_LAYERED; // | WS_EX_TRANSPARENT
-	SetWindowLong(m_hwnd, GWL_EXSTYLE, style);
-
+	LONG exStyle = GetWindowLong(m_hwnd, GWL_EXSTYLE);
+	SetWindowLong(m_hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
 
 	SetLayeredWindowAttributes(m_hwnd, 0, 255, LWA_ALPHA);
 }
-
-
+/**
+ * @brief Callback function that collects visible top-level windows.
+ *        This function is used with EnumWindows to collect all visible HWNDs
+ *        into the GlobeWindow's topLevelWindows vector.
+ * 
+ * @param hwnd:   A handle to the window being enumerated.
+ * @param lParam: A pointer cast as LPARAM, used to pass the GlobeWindow instance.
+ * @return        TRUE to continue enumeration, FALSE to stop.
+ */
 BOOL CALLBACK GlobeWindow::EnumWindowsZ(HWND hwnd, LPARAM lParam) {
 	if (!IsWindowVisible(hwnd)) return true;
 
@@ -95,10 +109,11 @@ BOOL CALLBACK GlobeWindow::EnumWindowsZ(HWND hwnd, LPARAM lParam) {
 	return true;
 }
 
-/*
- * retrieves the window at the provided z-order. 0 being the top most window.
- * the size-1 is the program manager and must be the last one in the list.
- * @param z_order the z index of the window you are looking for.
+/**
+ * @brief Retrieves the window at the provided z-order. 0 being the top most window. 
+          The size-1 is the program manager and must be the last one in the list.
+ * @param  z_order the z index of the window you are looking for.
+ * @return The HWND window at z_order
  */
 HWND GlobeWindow::RetrieveWindowAtZ(int z_order) {
 	topLevelWindows.clear();
@@ -110,7 +125,30 @@ void GlobeWindow::SendHWND_ToZ(int z) {
 	SetWindowPos(m_hwnd, RetrieveWindowAtZ(z - 1), 0, 0, 0, 0,
 		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 }
+/**
+ * @return The inital integer Z order 
+ */
+int GlobeWindow::getInitialZ_Order() {
+	SetWindowPos(m_hwnd, HWND_BOTTOM, 0, 0, 0, 0,
+		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+	topLevelWindows.clear();
+	EnumWindows(EnumWindowsZ, reinterpret_cast<LPARAM>(this));
 
+	for (int i = topLevelWindows.size() - 1; i > 0; i--) {
+		if (topLevelWindows[i] == m_hwnd) {
+			return i;
+		}
+	}
+	return -1;
+}
+/**
+ * @brief Creates a GLFW window.
+ *
+ * @param title:   The window title.
+ * @param monitor: The monitor for fullscreen mode, or NULL for windowed.
+ * @param share:   A window to share OpenGL context with, or NULL.
+ * @return         A pointer to the created GLFWwindow, or NULL on failure.
+ */
 GLFWwindow* GlobeWindow::CreateGLFW_Window(
 	const char* title,
 	GLFWmonitor* monitor,
