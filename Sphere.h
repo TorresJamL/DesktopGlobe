@@ -43,9 +43,6 @@ public:
 		float rotationAngle,
 		glm::vec3 orientationUnitVect,
 		glm::vec3 rotationUnitVect);
-	void setSectorCount(int sectorCount);
-	void setStackCount(int stackCount);
-	void setRadius(float radius);
 	void Inputs(GLFWwindow* window, float deltatime, int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4, glm::mat4 camProjMat4);
 	glm::vec3 getSphereScreenVector(
 		int width, int height, 
@@ -68,8 +65,6 @@ private:
 
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> indices;
-
-	void Update();
 
 	std::vector<GLfloat> static generateSphereVertices(float radius, unsigned int sectorCount, unsigned int stackCount);
 	std::vector<GLuint> static generateSphereIndices(unsigned int sectorCount, unsigned int stackCount);

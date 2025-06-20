@@ -53,23 +53,6 @@ std::vector<GLuint> Sphere::getIndices() {
 	return indices;
 }
 
-void Sphere::setSectorCount(int sectorCount) {
-	this->sectorCount = sectorCount;
-}
-
-void Sphere::setStackCount(int stackCount) {
-	this->stackCount = stackCount;
-}
-
-void Sphere::setRadius(float radius) {
-	this->radius = radius;
-}
-
-void Sphere::Update() {
-	vertices = generateSphereVertices(radius, sectorCount, stackCount);
-	indices = generateSphereIndices(sectorCount, stackCount);
-}
-
 void Sphere::Draw(
 	Shader shader,
 	float orientationAngle,
@@ -115,7 +98,14 @@ glm::mat4 Sphere::getCornerTranslation(
 	return glm::translate(glm::mat4(1.0f), translation);
 }
 
-void Sphere::Inputs(GLFWwindow* window, float deltatime, int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4 , glm::mat4 camProjMat4) {
+void Sphere::Inputs(
+	GLFWwindow* window, 
+	float deltatime, 
+	int width, int height, 
+	glm::vec3 camPos,
+	glm::mat4 camViewMat4 , 
+	glm::mat4 camProjMat4) 
+{
 	if (!isInteractable) return;
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
@@ -154,7 +144,14 @@ glm::vec3 Sphere::getSphereScreenVector(int width, int height, glm::vec3 camPos,
 	return screenPos;
 }
 
-void Sphere::Rotate(GLFWwindow* window, float deltatime, int width, int height, glm::vec3 camPos, glm::mat4 camViewMat4, glm::mat4 camProjMat4) {
+void Sphere::Rotate(
+	GLFWwindow* window, 
+	float deltatime, 
+	int width, int height, 
+	glm::vec3 camPos, 
+	glm::mat4 camViewMat4, 
+	glm::mat4 camProjMat4) 
+{
 	if (!isInteracting) {
 		rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f); 
 		orientationAxis = glm::vec3(1.0f, 0.0f, 0.0f);

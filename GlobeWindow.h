@@ -25,11 +25,10 @@ public:
 
 	int getInitialZ_Order();
 
-	void ShouldClose();
-	void updateMousePassThrough();
+	void Update();
 	void SetWindowStyles();
 	void SendHWND_ToZ(int z);
-
+	
 	static BOOL CALLBACK EnumWindowsZ(HWND hwnd, LPARAM lParam);
 	HWND RetrieveWindowAtZ(int zOrder);
 private:
@@ -40,5 +39,7 @@ private:
 		GLFWmonitor* monitor,
 		GLFWwindow* share);
 
+	void ShouldClose();
+	void updateMousePassThrough();
 	static std::string GetWindowTitle(HWND hwnd);
 };

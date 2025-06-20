@@ -11,9 +11,7 @@
 #include <iostream>
 #include <vector>
 
-/*
- * Prints to Debug
- */
+/* Prints to Debug */
 void print(std::string str) {
 	str += "\n";
 	std::wstring wstr(str.begin(), str.end());
@@ -26,11 +24,11 @@ GlobeWindow::~GlobeWindow() {
 
 	glfwTerminate();
 }
-
 GlobeWindow::GlobeWindow(){
 	this->title = "Transparent Globe Win";
 	GLFWwnd = CreateGLFW_Window(title, NULL, NULL);
 	m_hwnd = glfwGetWin32Window(GLFWwnd);
+	desiredZ_order = getInitialZ_Order();
 }
 /**
  * @brief Constuctor with the option of a title.
@@ -41,7 +39,13 @@ GlobeWindow::GlobeWindow(const char* title) {
 	GLFWwnd = CreateGLFW_Window(title, NULL, NULL);
 	m_hwnd = glfwGetWin32Window(GLFWwnd);
 }
-/* If the esc-key is pressed, exit the window.*/
+/* Constantly Update window.*/
+void GlobeWindow::Update() {
+	ShouldClose();
+	updateMousePassThrough();
+	SendHWND_ToZ(desiredZ_order);
+}
+/* If the esc-key is pressed, exit the window. */
 void GlobeWindow::ShouldClose() {
 	if (glfwGetKey(GLFWwnd, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(GLFWwnd, 1);
@@ -68,17 +72,15 @@ void GlobeWindow::updateMousePassThrough() {
 	exStyle |= WS_EX_LAYERED;
 	if (isOverSphere) {
 		exStyle &= ~WS_EX_TRANSPARENT; // allow clicks
-		print("Allowing Clicks");
+		//print("Allowing Clicks");
 	}
 	else {
 		exStyle |= WS_EX_TRANSPARENT; // pass through
-		print("Passing Through");
+		//print("Passing Through");
 	}
 	SetWindowLong(m_hwnd, GWL_EXSTYLE, exStyle);
 }
-/**
- * @brief Sets the window style to make it transparent.
- */
+/* @brief Sets the window style to make it transparent. */
 void GlobeWindow::SetWindowStyles() {
 	// Gets rid of the white bar background behind the window's name, aka the frame.
 	MARGINS margins = { -1 };
@@ -108,7 +110,6 @@ BOOL CALLBACK GlobeWindow::EnumWindowsZ(HWND hwnd, LPARAM lParam) {
 	self->topLevelWindows.push_back(hwnd);
 	return true;
 }
-
 /**
  * @brief Retrieves the window at the provided z-order. 0 being the top most window. 
           The size-1 is the program manager and must be the last one in the list.
@@ -125,9 +126,7 @@ void GlobeWindow::SendHWND_ToZ(int z) {
 	SetWindowPos(m_hwnd, RetrieveWindowAtZ(z - 1), 0, 0, 0, 0,
 		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 }
-/**
- * @return The inital integer Z order 
- */
+/* @return The inital integer Z order */
 int GlobeWindow::getInitialZ_Order() {
 	SetWindowPos(m_hwnd, HWND_BOTTOM, 0, 0, 0, 0,
 		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);

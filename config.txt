@@ -1,0 +1,12 @@
+# Configuration File For Desktop Globe
+
+### Globe Settings:
+radius=0.2
+sector_count=144
+stack_count=72
+Field_Of_View_(Degrees)=45
+CameraDistance
+
+### Window Settings:
+title=GlobeWindow
+desired_Z_order=LOWEST

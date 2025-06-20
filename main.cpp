@@ -19,21 +19,30 @@
 #include "Sphere.h"
 #include "GlobeWindow.h"
 
+bool mouseClicked = false;
+double mouseX, mouseY;
+
+void debugPrint(std::string str) {
+	str += "\n";
+	std::wstring wstr(str.begin(), str.end());
+	OutputDebugString(wstr.c_str());
+}
 
 int main() {
 	GlobeWindow wnd;
 
 	Shader shaderProgram("default.vert", "default.frag");
-	Sphere sphere(0.2f, 144, 72, wnd.width, wnd.height, 45.0f, 3.0f, 3.0f);
+
+	Sphere globe(0.2f, 144, 72, wnd.width, wnd.height, 45.0f, 3.0f, 3.0f);
 
 	// Generates Vertex Array Object and binds it
 	VertexArrayObject VAO1;
 	VAO1.Bind();
 
 	// Creates Vertex Buffer Object and links it to vertices
-	VertexBufferObject VBO1(sphere.getVertices().data(), sphere.getVertices().size() * sizeof(GLfloat));
+	VertexBufferObject VBO1(globe.getVertices().data(), globe.getVertices().size() * sizeof(GLfloat));
 	// Creates Element Buffer Object and links it to indices
-	ElementBufferObject EBO1(sphere.getIndices().data(), sphere.getIndices().size() * sizeof(GLuint));
+	ElementBufferObject EBO1(globe.getIndices().data(), globe.getIndices().size() * sizeof(GLuint));
 	
 	// Links VBO to VAO
 	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
@@ -45,6 +54,7 @@ int main() {
 	EBO1.Unbind();
 
 	Texture image("newEarth.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
+	
 	image.texUnit(shaderProgram, "tex0", 0);
 
 	wnd.SetWindowStyles();
@@ -64,43 +74,47 @@ int main() {
 	camera.freeCamera = false;
 	
 	while (!glfwWindowShouldClose(wnd.GLFWwnd)) {
-		
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		
-		// Draw space
+
+		// If the window gets minimized, maximize it. 
+		// ISSUE: Forcing to desktop circumvents this. 
+		if (IsIconic(wnd.m_hwnd)) {
+			debugPrint("window is minimized, proceeding to maximize...");
+			ShowWindow(wnd.m_hwnd, SW_MAXIMIZE);
+		}
+		// Draw space~
 		shaderProgram.Activate();
 
 		camera.Inputs(wnd.GLFWwnd, (float)deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 		 
 		// Rotates the sphere around the z-axis
-		sphere.Draw(
+		globe.Draw(
 			shaderProgram,
-			sphere.orientation,
-			sphere.rotation,
-			sphere.orientationAxis,
-			sphere.rotationAxis
+			globe.orientation,
+			globe.rotation,
+			globe.orientationAxis,
+			globe.rotationAxis
 		);
 
-		sphere.Inputs(wnd.GLFWwnd, (float)deltaTime, wnd.width, wnd.height, camera.position, camera.view, camera.projection);
-		sphere.Rotate(wnd.GLFWwnd, (float)deltaTime, wnd.width, wnd.height, camera.position, camera.view, camera.projection);
+		globe.Inputs(wnd.GLFWwnd, (float)deltaTime, wnd.width, wnd.height, camera.position, camera.view, camera.projection);
+		globe.Rotate(wnd.GLFWwnd, (float)deltaTime, wnd.width, wnd.height, camera.position, camera.view, camera.projection);
 
 		// Binds texture so that is appears in rendering
 		image.Bind();
 
 		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sphere.getIndices().size()), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(globe.getIndices().size()), GL_UNSIGNED_INT, 0);
 
 		glFlush(); 
 
-		wnd.updateMousePassThrough();
 		// End of draw space.
-		wnd.ShouldClose();
+		wnd.Update();
 
 		glfwSwapBuffers(wnd.GLFWwnd);
 		glfwPollEvents();
@@ -112,7 +126,6 @@ int main() {
 	EBO1.Delete();
 	shaderProgram.Delete();
 	image.Delete();
-	wnd.~GlobeWindow();
 	return 0;
 }
 /* 

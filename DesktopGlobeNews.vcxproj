@@ -143,6 +143,7 @@
     <ClCompile Include="VertexBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="color_input.frag" />
     <None Include="default.frag" />
     <None Include="default.vert" />
   </ItemGroup>
@@ -158,11 +159,11 @@
     <ClInclude Include="VertexBufferObject.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\pfp.jpg" />
     <Image Include="ColoredRegions.jpg" />
-    <Image Include="earth.jpg" />
     <Image Include="newEarth.jpg" />
-    <Image Include="obamman.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
