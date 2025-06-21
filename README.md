@@ -18,7 +18,7 @@ Currently, not everything is fully implemented, but that's not to say that nothi
 - Ability to rotate the globe manually | ~100% complete
 - Sticks to your desktop above your wallpaper | ~100% complete
 - Manual movement/orientation of the globe | ~30% complete
-- Configuration file to adjust features of the globe (i.e., rotation speed) | 30% complete
+- Configuration file to adjust features of the globe (i.e., rotation speed) | 90% complete
 - Ability to click on a continent to receive top headlines in the region | ~5% complete
 
 ## Things Used:
