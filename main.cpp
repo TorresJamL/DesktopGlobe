@@ -18,6 +18,7 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include "GlobeWindow.h"
+#include "Config.h"
 
 bool mouseClicked = false;
 double mouseX, mouseY;
@@ -29,12 +30,14 @@ void debugPrint(std::string str) {
 }
 
 int main() {
+	Config::getConfigContents();
+
 	GlobeWindow wnd;
 
 	Shader shaderProgram("default.vert", "default.frag");
 
-	Sphere globe(0.2f, 144, 72, wnd.width, wnd.height, 45.0f, 3.0f, 3.0f);
-
+	Sphere globe(wnd.width, wnd.height);
+	
 	// Generates Vertex Array Object and binds it
 	VertexArrayObject VAO1;
 	VAO1.Bind();

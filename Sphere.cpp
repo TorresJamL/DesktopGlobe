@@ -10,12 +10,12 @@
 #include "GLFW/glfw3.h"
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+#include <string>      // for std::string
+#include <sstream>     // for std::ostringstream
 #include <vector>
 
 #include "shaderClass.h"
-#include <string>      // for std::string
-#include <sstream>     // for std::ostringstream
-
+#include "Config.h"
 
 void static DebugVec3(const std::string& label, const glm::vec3& v) {
 	std::ostringstream oss;
@@ -23,6 +23,7 @@ void static DebugVec3(const std::string& label, const glm::vec3& v) {
 	OutputDebugStringA(oss.str().c_str());
 }
 
+Sphere::~Sphere() {}
 Sphere::Sphere(
 	float radius, 
 	int sectorCount, 
@@ -40,9 +41,13 @@ Sphere::Sphere(
 	this->vertices = generateSphereVertices(radius, sectorCount, stackCount);
 	this->indices = generateSphereIndices(sectorCount, stackCount);
 }
-
-Sphere::~Sphere() {
-
+Sphere::Sphere(int screenWidth, int screenHeight) {
+	radius = Config::globeRadius;
+	sectorCount = Config::globeSectorCount;
+	stackCount = Config::globeStackCount;
+	this->translation = getCornerTranslation(screenWidth, screenHeight, Config::camDist, Config::fovDeg, Config::camDist, true);
+	this->vertices = generateSphereVertices(radius, sectorCount, stackCount);
+	this->indices = generateSphereIndices(sectorCount, stackCount);
 }
 
 std::vector<GLfloat> Sphere::getVertices() {

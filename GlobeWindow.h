@@ -9,6 +9,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include "Config.h"
+
 // TODO: Add a desired Z order, that the main loop will force the window to be at if it isn't at it.
 //			Initialize this desiredZ_Order by getting the Z order after forcing the window to the bottom!
 class GlobeWindow {

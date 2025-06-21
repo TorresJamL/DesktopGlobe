@@ -6,6 +6,8 @@
 #include <GLFW/glfw3native.h>
 #include <dwmapi.h>
 
+#include "Config.h"
+
 #include <stdexcept>
 #include <string>
 #include <iostream>
@@ -28,7 +30,7 @@ GlobeWindow::GlobeWindow(){
 	this->title = "Transparent Globe Win";
 	GLFWwnd = CreateGLFW_Window(title, NULL, NULL);
 	m_hwnd = glfwGetWin32Window(GLFWwnd);
-	desiredZ_order = getInitialZ_Order();
+	desiredZ_order = (Config::desiredZ_order == -1) ? getInitialZ_Order() : Config::desiredZ_order;
 }
 /**
  * @brief Constuctor with the option of a title.

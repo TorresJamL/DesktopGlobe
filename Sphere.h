@@ -23,6 +23,7 @@ public:
 		float fovDeg,
 		float camInit_Z,
 		float distanceFromCamera);
+	Sphere(int screenWidth, int screenHeight);
 	bool isInteractable = true;
 	bool firstClick = true;
 	bool isInteracting = false;

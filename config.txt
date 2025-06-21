@@ -4,9 +4,9 @@
 radius=0.2
 sector_count=144
 stack_count=72
-Field_Of_View_(Degrees)=45
-CameraDistance
+Field_Of_View_(Degrees)=45.0
+CameraDistance=3.0
 
 ### Window Settings:
 title=GlobeWindow
-desired_Z_order=LOWEST
+desired_Z_order=NONE

@@ -6,13 +6,16 @@
 #include <vector>
 
 using namespace std;
-Config::~Config() {
-	delete configFileName;
-	delete title;
-}
-Config::Config() {
-	getConfigContents();
-}
+
+float Config::globeRadius = 0.2f;
+int Config::globeSectorCount = 144;
+int Config::globeStackCount = 144;
+float Config::fovDeg = 45.0f;
+float Config::camDist = 3.0f; 
+
+std::string Config::title = "GlobeWindow";
+int Config::desiredZ_order = -1;
+
 std::vector<string> getSettingValuePair(string str, string del = "=") {
 	int start, end = -1 * del.size();
 	vector<string> setting_value;
@@ -25,8 +28,8 @@ std::vector<string> getSettingValuePair(string str, string del = "=") {
 	return setting_value;
 }
 void Config::getConfigContents() {
-	ifstream contents(configFileName);
-	
+	ifstream contents("config.txt");
+
 	if (!contents.is_open()) {
 		return;
 	}
@@ -36,12 +39,54 @@ void Config::getConfigContents() {
 		string configSetting, configValue;
 		vector<string> configPair = getSettingValuePair(line);
 		configSetting = configPair[0];
-		configValue = configPair[1];
+		if (configPair.size() > 1)
+			configValue = configPair[1];
 		char* end;
 		if (configSetting == "radius") {
-			globeRadius = strtof(configValue.c_str(), &end);
+			if (configValue != "NONE")
+				globeRadius = strtof(configValue.c_str(), &end);
 		}
+		else if (configSetting == "sector_count") {
+			if (configValue != "NONE")
+				globeSectorCount = stoi(configValue);
+		}
+		else if (configSetting == "stack_count") {
+			if (configValue != "NONE")
+				globeStackCount = stoi(configValue);
+		}
+		else if (configSetting == "Field_Of_View_(Degrees)") {
+			if (configValue != "NONE")
+				fovDeg = strtof(configValue.c_str(), &end);
+		}
+		else if (configSetting == "CameraDistance") {
+			if (configValue != "NONE")
+				camDist = strtof(configValue.c_str(), &end);
+		}
+		else if (configSetting == "title") {
+			if (configValue != "NONE")
+				title = configValue;
+		}
+		else if (configSetting == "desired_Z_order") {
+			if (configValue != "NONE") 
+				desiredZ_order = stoi(configValue);
+		}
+		else continue; // This statement is unnecessary. But I really wanted to use continue.
 	}
-
 	contents.close();
+}
+const char* Config::toString() {
+	auto str = new string(
+		"# Configuration File For Desktop Globe \n\
+		### Globe Settings : \n\
+		radius = " + to_string(globeRadius) + " \n\
+		sector_count = " + to_string(globeSectorCount) + " \n\
+		stack_count = " + to_string(globeStackCount) + " \n\
+		Field_Of_View_(Degrees) = " + to_string(fovDeg) + " \n\
+		CameraDistance = " + to_string(camDist) + " \n\
+		\n\
+		### Window Settings : \n\
+		title = " + title + " \n\
+		desired_Z_order = " + to_string(desiredZ_order) + "\n\
+	");
+	return str->c_str();
 }

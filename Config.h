@@ -1,23 +1,25 @@
 #ifndef CONFIG_CLASS_H
 #define CONFIG_CLASS_H
 
+#include <string>
+
 class Config {
 public:
+	const char* toString();
 	// Sphere Configs
-	int globeSectorCount;
-	int globeStackCount;
-	float globeRadius;
-	float fovDeg;
+	static int globeSectorCount;
+	static int globeStackCount;
+	static float globeRadius;
+	static float fovDeg;
+	static float camDist;
 
 	// Window Configs
-	int desiredZ_order;
-	const char* title;
-
-	~Config();
-	Config();
+	static int desiredZ_order;
+	static std::string title;
+	
+	static void getConfigContents();
 private:
-	const char* configFileName = "config.txt";
-	void getConfigContents();
+	Config() = delete;
 };
 
 #endif // !CONFIG_CLASS_H
