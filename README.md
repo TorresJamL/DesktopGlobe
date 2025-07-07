@@ -32,5 +32,8 @@ Currently, not everything is fully implemented, but that's not to say that nothi
 ## Installation:
 Currently unavailable, but will be available once all features are implemented. 
 
-
+## Examples!
+![](https://github.com/TorresJamL/DesktopGlobe/blob/master/Examples/example1.gif)
+![](https://github.com/TorresJamL/DesktopGlobe/blob/master/Examples/example2.gif)
+![](https://github.com/TorresJamL/DesktopGlobe/blob/master/Examples/screenshotEx.png)
 ### Created by Jamil Torres.
