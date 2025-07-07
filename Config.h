@@ -12,6 +12,8 @@ public:
 	static float globeRadius;
 	static float fovDeg;
 	static float camDist;
+	static float rotX;
+	static float rotY;
 
 	// Window Configs
 	static int desiredZ_order;

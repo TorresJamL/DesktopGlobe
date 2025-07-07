@@ -12,6 +12,8 @@ int Config::globeSectorCount = 144;
 int Config::globeStackCount = 144;
 float Config::fovDeg = 45.0f;
 float Config::camDist = 3.0f; 
+float Config::rotX = 20.0f;
+float Config::rotY = 90.0f;
 
 std::string Config::title = "GlobeWindow";
 int Config::desiredZ_order = -1;
@@ -43,24 +45,34 @@ void Config::getConfigContents() {
 			configValue = configPair[1];
 		char* end;
 		if (configSetting == "radius") {
-			if (configValue != "NONE")
-				globeRadius = strtof(configValue.c_str(), &end);
+			if (configValue != "NONE") {
+				float radius = strtof(configValue.c_str(), &end);
+				if (radius > 0.1) globeRadius = radius;
+			}
 		}
 		else if (configSetting == "sector_count") {
-			if (configValue != "NONE")
-				globeSectorCount = stoi(configValue);
+			if (configValue != "NONE") {
+				int count = stoi(configValue);
+				if (count > 0) globeSectorCount = count;
+			}
 		}
 		else if (configSetting == "stack_count") {
-			if (configValue != "NONE")
-				globeStackCount = stoi(configValue);
+			if (configValue != "NONE") {
+				int count = stoi(configValue);
+				if (count > 0) globeStackCount = count;
+			}
 		}
 		else if (configSetting == "Field_Of_View_(Degrees)") {
-			if (configValue != "NONE")
-				fovDeg = strtof(configValue.c_str(), &end);
+			if (configValue != "NONE") {
+				float FOV = strtof(configValue.c_str(), &end);
+				if (FOV > 0.0) fovDeg = FOV;
+			}
 		}
 		else if (configSetting == "CameraDistance") {
-			if (configValue != "NONE")
-				camDist = strtof(configValue.c_str(), &end);
+			if (configValue != "NONE") {
+				float distance = strtof(configValue.c_str(), &end);
+				if (distance > 0.0) camDist = distance;
+			}
 		}
 		else if (configSetting == "title") {
 			if (configValue != "NONE")
