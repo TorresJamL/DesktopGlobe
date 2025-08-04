@@ -30,7 +30,8 @@ Currently, not everything is fully implemented, but that's not to say that nothi
 - Visual Studio 2022
 
 ## Installation:
-Currently unavailable, but will be available once all features are implemented. 
+!!!WARNING: THIS PROJECT IS NOT COMPLETELY FINISHED AND LIKELY RIDDLED WITH BUGS. IF YOU ENCOUNTER ANY ISSUES, PLEASE FEEL FREE TO CONTACT ME @ torresjamil008@gmail.com  
+
 
 ## Examples!
 ![](https://github.com/TorresJamL/DesktopGlobe/blob/master/Examples/example1.gif)
