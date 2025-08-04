@@ -1,0 +1,14 @@
+# Configuration File For Desktop Globe
+
+### Globe Settings:
+radius=0.5
+sector_count=144
+stack_count=72
+Field_Of_View_(Degrees)=45.0
+CameraDistance=3.0
+Xrotation_speed=NONE
+Yrotation_speed=NONE
+
+### Window Settings:
+title=GlobeWindow
+desired_Z_order=NONE
