@@ -30,8 +30,18 @@ Currently, not everything is fully implemented, but that's not to say that nothi
 - Visual Studio 2022
 
 ## Installation:
-!!!WARNING: THIS PROJECT IS NOT COMPLETELY FINISHED AND LIKELY RIDDLED WITH BUGS. IF YOU ENCOUNTER ANY ISSUES, PLEASE FEEL FREE TO CONTACT ME @ torresjamil008@gmail.com  
+**WARNING: THIS PROJECT IS NOT COMPLETELY FINISHED AND LIKELY RIDDLED WITH BUGS.** 
 
+_IF YOU ENCOUNTER ANY ISSUES, PLEASE FEEL FREE TO CONTACT ME @ torresjamil008@gmail.com_
+
+Go to https://github.com/TorresJamL/DesktopGlobe/releases
+
+Find the most recent release and download the .zip associated with the release.
+Once downloaded, unzip the folder into a folder of your choice (preferably empty) and run the executable!
+
+To adjust certain values, you can change the config.txt.
+If the config.txt cannot be found or is formatted incorrectly, the program may not work. 
+All values within the config.txt on the .zip download are the default values. If you must get the default values, you can view them in this repository!
 
 ## Examples!
 ![](https://github.com/TorresJamL/DesktopGlobe/blob/master/Examples/example1.gif)
