@@ -57,7 +57,6 @@ int main() {
 	EBO1.Unbind();
 
 	Texture image("newEarth.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
-	
 	image.texUnit(shaderProgram, "tex0", 0);
 
 	wnd.SetWindowStyles();
@@ -75,7 +74,7 @@ int main() {
 	int rotater = 0;
 
 	camera.freeCamera = false;
-	
+
 	while (!glfwWindowShouldClose(wnd.GLFWwnd)) {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -122,7 +121,7 @@ int main() {
 		glfwSwapBuffers(wnd.GLFWwnd);
 		glfwPollEvents();
 	}
-
+	MessageBoxA(nullptr, "Closing...", "Debug", MB_OK);
 	// Delete all the objects created. "Before creation, comes destruction" - Beerus... Should've learned to code.
 	VAO1.Delete();
 	VBO1.Delete();

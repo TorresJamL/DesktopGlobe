@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include <GL/glew.h>
 #include "shaderClass.h"
 #include "GLFW/glfw3.h"
@@ -19,11 +20,10 @@ std::string get_file_contents(const char* filename) {
 }
 
 Shader::Shader(const char* vertexFile, const char* fragmentFile) {
-	std::string vertexCode = get_file_contents(vertexFile);
-	std::string fragmentCode = get_file_contents(fragmentFile);
-
-	const char* vertexSource = vertexCode.c_str();
-	const char* fragmentSource = fragmentCode.c_str();
+	/*std::string vertexCode = get_file_contents(vertexFile);
+	std::string fragmentCode = get_file_contents(fragmentFile);*/
+	const char* vertexSource = vertCode;
+	const char* fragmentSource = fragCode;
 
 	// Create the OpenGL vertex shader object and get its reference
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
