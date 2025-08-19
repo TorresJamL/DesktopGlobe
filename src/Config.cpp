@@ -30,7 +30,7 @@ std::vector<string> getSettingValuePair(string str, string del = "=") {
 	return setting_value;
 }
 void Config::getConfigContents() {
-	ifstream contents("config.txt");
+	ifstream contents("resources\\config\\config.txt");
 
 	if (!contents.is_open()) {
 		return;

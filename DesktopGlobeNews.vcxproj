@@ -131,40 +131,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Config.cpp" />
-    <ClCompile Include="ElementBufferObject.cpp" />
-    <ClCompile Include="GlobeWindow.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="shaderClass.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="stb.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VertexArrayObject.cpp" />
-    <ClCompile Include="VertexBufferObject.cpp" />
+    <ClInclude Include="includes\Camera.h" />
+    <ClInclude Include="includes\Config.h" />
+    <ClInclude Include="includes\ElementBufferObject.h" />
+    <ClInclude Include="includes\GlobeWindow.h" />
+    <ClInclude Include="includes\shaderClass.h" />
+    <ClInclude Include="includes\Sphere.h" />
+    <ClInclude Include="includes\Texture.h" />
+    <ClInclude Include="includes\VertexArrayObject.h" />
+    <ClInclude Include="includes\VertexBufferObject.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="color_input.frag" />
-    <None Include="default.frag" />
-    <None Include="default.vert" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Config.cpp" />
+    <ClCompile Include="src\ElementBufferObject.cpp" />
+    <ClCompile Include="src\GlobeWindow.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\shaderClass.cpp" />
+    <ClCompile Include="src\Sphere.cpp" />
+    <ClCompile Include="src\stb.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\VertexArrayObject.cpp" />
+    <ClCompile Include="src\VertexBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="ElementBufferObject.h" />
-    <ClInclude Include="GlobeWindow.h" />
-    <ClInclude Include="shaderClass.h" />
-    <ClInclude Include="Sphere.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="VertexArrayObject.h" />
-    <ClInclude Include="VertexBufferObject.h" />
+    <Text Include="resource\config\config.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="ColoredRegions.jpg" />
-    <Image Include="newEarth.jpg" />
+    <None Include="resource\shaders\color_input.frag" />
+    <None Include="resource\shaders\default.frag" />
+    <None Include="resource\shaders\default.vert" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="config.txt" />
+    <Image Include="resource\textures\ColoredRegions.jpg" />
+    <Image Include="resource\textures\newEarth.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
